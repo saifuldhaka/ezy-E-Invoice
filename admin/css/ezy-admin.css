@@ -1,0 +1,181 @@
+/* ezy E Invoice – Admin Styles */
+
+/* ── WRAP & HEADER ─────────────────────────────────────────────────────────── */
+.ezy-wrap { max-width: 1400px; }
+.ezy-header { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin-bottom: 20px; padding-bottom: 12px; border-bottom: 2px solid #1f497d; }
+.ezy-header h1 { margin: 0; padding: 0; flex: 1; color: #1f497d; }
+.ezy-header h1 .dashicons { font-size: 24px; margin-right: 5px; vertical-align: middle; }
+.ezy-header-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+.ezy-required { color: #d63638; }
+
+/* ── CARDS ──────────────────────────────────────────────────────────────────── */
+.ezy-card { background: #fff; border: 1px solid #e0e0e0; border-radius: 6px; padding: 20px; margin-bottom: 20px; box-shadow: 0 1px 3px rgba(0,0,0,.05); }
+.ezy-card h2 { margin: 0 0 15px; padding: 0 0 10px; border-bottom: 1px solid #f0f0f0; color: #1f497d; font-size: 14px; text-transform: uppercase; letter-spacing: .5px; }
+.ezy-card h2 .dashicons { vertical-align: middle; margin-right: 5px; }
+
+/* ── DASHBOARD STATS ─────────────────────────────────────────────────────────── */
+.ezy-stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px; margin-bottom: 20px; }
+@media (max-width: 900px) { .ezy-stats-grid { grid-template-columns: repeat(2, 1fr); } }
+.ezy-stat-card { background: #fff; border-radius: 8px; padding: 20px; text-align: center; box-shadow: 0 2px 6px rgba(0,0,0,.08); border-top: 4px solid #ccc; }
+.ezy-stat-blue   { border-top-color: #1f497d; }
+.ezy-stat-green  { border-top-color: #2c9f2c; }
+.ezy-stat-teal   { border-top-color: #0096a7; }
+.ezy-stat-purple { border-top-color: #7c5cbf; }
+.ezy-stat-icon { font-size: 30px; color: #1f497d; display: block; margin-bottom: 8px; }
+.ezy-stat-num { font-size: 26px; font-weight: 700; color: #1f497d; }
+.ezy-stat-lbl { font-size: 12px; color: #888; margin-top: 4px; }
+
+/* ── ROW / COLUMN ────────────────────────────────────────────────────────────── */
+.ezy-row { display: flex; gap: 20px; }
+.ezy-col-2 { flex: 1; }
+
+/* ── BADGES ──────────────────────────────────────────────────────────────────── */
+.ezy-badge { display: inline-block; padding: 2px 8px; border-radius: 12px; font-size: 11px; font-weight: 600; text-transform: uppercase; }
+.ezy-badge-draft    { background: #e8e8e8; color: #555; }
+.ezy-badge-sent     { background: #d4edda; color: #155724; }
+.ezy-badge-paid     { background: #fff3cd; color: #856404; }
+.ezy-badge-overdue  { background: #f8d7da; color: #721c24; }
+.ezy-badge-blue     { background: #d0e4f4; color: #1f497d; }
+.ezy-badge-green    { background: #d4edda; color: #155724; }
+.ezy-badge-gold     { background: #fff3cd; color: #856404; }
+.ezy-badge-red      { background: #f8d7da; color: #721c24; }
+
+/* ── TABLES ──────────────────────────────────────────────────────────────────── */
+.ezy-table th { background: #f0f4f9 !important; color: #1f497d; }
+.ezy-table td { vertical-align: middle; }
+.ezy-actions { white-space: nowrap; }
+.ezy-empty { text-align: center; color: #888; padding: 30px !important; font-style: italic; }
+.ezy-count { color: #888; font-size: 12px; margin: 5px 0 10px; }
+.ezy-status-table { width: 100%; }
+.ezy-status-table td { padding: 6px 0; }
+.ezy-status-table td:last-child { text-align: right; font-weight: 700; }
+
+/* ── SEARCH ──────────────────────────────────────────────────────────────────── */
+.ezy-search-form { display: flex; gap: 8px; align-items: center; margin-bottom: 15px; }
+.ezy-search-input { min-width: 280px; }
+
+/* ── FILTERS ─────────────────────────────────────────────────────────────────── */
+.ezy-filters { display: flex; gap: 0; margin-bottom: 0; border-bottom: 1px solid #ddd; }
+.ezy-filter-tab { padding: 8px 16px; text-decoration: none; color: #555; border: 1px solid #ddd; border-bottom: none; background: #f8f8f8; margin-right: -1px; border-radius: 4px 4px 0 0; font-size: 13px; }
+.ezy-filter-tab.active { background: #fff; color: #1f497d; font-weight: 600; border-bottom: 1px solid #fff; }
+
+/* ── SETTINGS TABS ───────────────────────────────────────────────────────────── */
+.ezy-tabs .dashicons { vertical-align: middle; font-size: 16px; margin-right: 4px; }
+.ezy-form-table th { width: 200px; font-weight: 600; color: #444; }
+.ezy-settings-section h2 { font-size: 16px; }
+
+/* ── PAGINATION ──────────────────────────────────────────────────────────────── */
+.ezy-pagination { display: flex; gap: 4px; margin-top: 15px; }
+
+/* ── MODAL ───────────────────────────────────────────────────────────────────── */
+.ezy-modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 100000; display: flex; align-items: center; justify-content: center; }
+.ezy-modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,.5); z-index: 99999; }
+.ezy-modal-content { background: #fff; border-radius: 8px; width: 700px; max-width: 95vw; max-height: 90vh; overflow-y: auto; z-index: 100001; position: relative; box-shadow: 0 10px 40px rgba(0,0,0,.3); }
+.ezy-modal-header { background: #1f497d; color: #fff; padding: 15px 20px; border-radius: 8px 8px 0 0; display: flex; align-items: center; }
+.ezy-modal-header h2 { margin: 0; flex: 1; color: #fff; font-size: 16px; }
+.ezy-modal-close { background: none; border: none; color: #fff; font-size: 24px; cursor: pointer; padding: 0; line-height: 1; }
+.ezy-modal-body { padding: 20px; }
+.ezy-modal-footer { padding: 15px 20px; border-top: 1px solid #eee; display: flex; align-items: center; gap: 10px; }
+.ezy-form-msg { font-size: 13px; }
+.ezy-form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+.ezy-form-field label { display: block; font-weight: 600; margin-bottom: 4px; font-size: 13px; }
+.ezy-form-field input, .ezy-form-field textarea, .ezy-form-field select { width: 100%; }
+.ezy-field-full { grid-column: 1 / -1; }
+
+/* ── CREATE INVOICE LAYOUT ───────────────────────────────────────────────────── */
+.ezy-create-layout { display: flex; gap: 20px; align-items: flex-start; }
+.ezy-create-main { flex: 1; min-width: 0; }
+.ezy-create-sidebar { width: 320px; flex-shrink: 0; position: sticky; top: 32px; }
+@media (max-width: 960px) { .ezy-create-layout { flex-direction: column; } .ezy-create-sidebar { width: 100%; position: static; } }
+
+/* ── CLIENT SEARCH ───────────────────────────────────────────────────────────── */
+.ezy-client-search-wrap { position: relative; }
+#client-search-input { width: 100%; font-size: 14px; }
+.ezy-client-info { margin-top: 10px; }
+.ezy-client-card { background: #f0f4f9; border-left: 4px solid #1f497d; padding: 10px 14px; border-radius: 4px; font-size: 13px; }
+.ezy-client-card strong { display: block; font-size: 14px; color: #1f497d; }
+
+/* ── ITEMS TABLE ─────────────────────────────────────────────────────────────── */
+.ezy-items-table-wrap { overflow-x: auto; }
+.ezy-items-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+.ezy-items-table th { background: #1f497d; color: #fff; padding: 8px 10px; text-align: left; white-space: nowrap; }
+.ezy-items-table td { padding: 6px 8px; border-bottom: 1px solid #eee; vertical-align: middle; }
+.ezy-items-table tr:nth-child(even) td { background: #f9f9f9; }
+.ezy-items-table .col-num { width: 35px; text-align: center; }
+.ezy-items-table .col-product { width: 200px; }
+.ezy-items-table .col-desc { min-width: 120px; }
+.ezy-items-table .col-price { width: 100px; }
+.ezy-items-table .col-qty { width: 70px; }
+.ezy-items-table .col-total { width: 100px; white-space: nowrap; }
+.ezy-items-table .col-action { width: 30px; }
+.ezy-items-table input[type="text"],
+.ezy-items-table input[type="number"] { width: 100%; padding: 4px 6px; }
+.item-line-total { font-weight: 600; }
+.remove-item-row { background: none; border: none; color: #d63638; font-size: 20px; cursor: pointer; padding: 0; line-height: 1; }
+.remove-item-row:hover { color: #a30000; }
+.ezy-items-footer { margin-top: 10px; }
+
+/* ── META TABLE ──────────────────────────────────────────────────────────────── */
+.ezy-meta-table { width: 100%; font-size: 13px; }
+.ezy-meta-table td { padding: 6px 8px 6px 0; }
+.ezy-meta-table td:first-child { white-space: nowrap; width: 120px; font-weight: 600; color: #555; }
+.ezy-meta-table input { width: 100%; }
+
+/* ── CHARGES ─────────────────────────────────────────────────────────────────── */
+.ezy-charges { display: flex; flex-direction: column; gap: 10px; }
+.ezy-toggle { display: flex; align-items: center; gap: 8px; cursor: pointer; }
+.ezy-discount-row { display: flex; align-items: center; gap: 8px; }
+.ezy-discount-row input { width: 100px; }
+
+/* ── TOTALS ──────────────────────────────────────────────────────────────────── */
+.ezy-totals-table { width: 100%; font-size: 14px; }
+.ezy-totals-table td { padding: 5px 0; }
+.ezy-totals-table td:last-child { text-align: right; font-weight: 600; }
+.ezy-total-final { border-top: 2px solid #1f497d; }
+.ezy-total-final td { font-size: 16px; color: #1f497d; padding-top: 10px; }
+
+/* ── SUBMIT CARD ─────────────────────────────────────────────────────────────── */
+.ezy-submit-card { text-align: center; }
+.ezy-btn-submit { width: 100%; text-align: center; padding: 12px 20px !important; font-size: 15px !important; height: auto !important; }
+.ezy-error-msg { background: #f8d7da; color: #721c24; padding: 10px 12px; border-radius: 4px; margin-top: 10px; font-size: 13px; }
+.ezy-success-banner { background: #d4edda; border: 1px solid #c3e6cb; color: #155724; padding: 15px 20px; border-radius: 6px; margin-bottom: 20px; display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.ezy-success-banner .dashicons { font-size: 24px; color: #2c9f2c; }
+
+/* ── BUTTONS ─────────────────────────────────────────────────────────────────── */
+.ezy-btn-block { display: block !important; width: 100% !important; margin-bottom: 8px !important; text-align: center; }
+.ezy-btn-block .dashicons { vertical-align: middle; }
+
+/* ── INVOICE PREVIEW (view-invoice.php) ──────────────────────────────────────── */
+.ezy-invoice-preview { background: #fff; border: 1px solid #ddd; border-radius: 6px; padding: 40px; max-width: 900px; margin: 0 auto 20px; box-shadow: 0 2px 8px rgba(0,0,0,.08); }
+.ezy-inv-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 30px; gap: 20px; }
+.ezy-inv-logo { max-height: 60px; max-width: 180px; display: block; margin-bottom: 10px; }
+.ezy-inv-company { display: block; font-size: 20px; font-weight: 700; color: #1f497d; margin-bottom: 5px; }
+.ezy-inv-from { line-height: 1.6; font-size: 13px; color: #555; }
+.ezy-inv-title-block { text-align: right; }
+.ezy-inv-title { font-size: 40px; font-weight: 700; color: #1f497d; line-height: 1; margin-bottom: 10px; }
+.ezy-inv-meta { font-size: 13px; }
+.ezy-inv-meta th { text-align: right; color: #888; padding-right: 10px; font-weight: normal; white-space: nowrap; }
+.ezy-inv-meta td { text-align: right; font-weight: 600; }
+.ezy-inv-bill-to { background: #f5f8fc; border-left: 4px solid #1f497d; padding: 15px 20px; border-radius: 0 4px 4px 0; margin-bottom: 25px; font-size: 13px; line-height: 1.7; }
+.ezy-inv-section-label { font-size: 10px; font-weight: 700; text-transform: uppercase; color: #1f497d; letter-spacing: 1px; margin-bottom: 6px; }
+.ezy-inv-items thead th { background: #1f497d !important; color: #fff !important; padding: 10px 14px; }
+.ezy-inv-items tbody td { padding: 10px 14px; }
+.ezy-inv-items tbody tr:nth-child(even) { background: #f5f8fc; }
+.ezy-inv-items .num { width: 40px; text-align: center; }
+.ezy-inv-items .right { text-align: right; }
+.ezy-item-desc { font-size: 11px; color: #888; margin-top: 2px; }
+.ezy-inv-totals { display: flex; justify-content: flex-end; margin: 15px 0; }
+.ezy-inv-totals table { width: 300px; font-size: 13px; }
+.ezy-inv-totals td { padding: 5px 10px; }
+.ezy-inv-totals td:last-child { text-align: right; font-weight: 600; }
+.ezy-inv-grand-total { background: #1f497d; color: #fff; }
+.ezy-inv-grand-total td { padding: 8px 10px; font-size: 16px; }
+.ezy-inv-notes { border-top: 1px solid #eee; padding-top: 20px; margin-top: 10px; font-size: 13px; line-height: 1.7; }
+.ezy-inv-footer { text-align: center; color: #aaa; font-size: 11px; margin-top: 30px; padding-top: 15px; border-top: 1px solid #eee; }
+
+/* jQuery UI Autocomplete custom styles */
+.ui-autocomplete { z-index: 999999 !important; max-height: 250px; overflow-y: auto; }
+.ui-menu-item-wrapper { font-size: 13px; }
+
+/* Body scroll lock when modal open */
+body.ezy-modal-open { overflow: hidden; }
