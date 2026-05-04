@@ -1,4 +1,4 @@
-## [2.1.2] - 2026-05-04
+## [2.1.3] - 2026-05-04
 
 ### Fixed
 - Renamed all plugin class prefixes `Ezy_*` → `EZYEIN_*` to satisfy WordPress.org 4-character prefix requirement

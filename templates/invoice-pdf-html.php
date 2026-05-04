@@ -1,4 +1,5 @@
 <?php
+// phpcs:disable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound -- Template partial included inside class method; variables are not in global scope.
 /**
  * Standalone HTML invoice template used for offline PDF generation and
  * email attachment fallback. This file is captured via ob_start() and saved
@@ -8,7 +9,6 @@
  * @package ezy-e-invoice
  */
 if ( ! defined( 'ABSPATH' ) ) exit;
-// phpcs:disable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound -- Template partial included within class methods; variables are not in global scope.
 
 ?>
 <!DOCTYPE html>

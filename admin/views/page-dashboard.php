@@ -1,6 +1,6 @@
 <?php
+// phpcs:disable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound -- Template partial included inside class method; variables are not in global scope.
 if ( ! defined( 'ABSPATH' ) ) exit;
-// phpcs:disable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound -- Template partial included within class methods; variables are not in global scope.
 
 $stats    = EZYEIN_DB::get_stats();
 $currency = EZYEIN_Settings::get( 'currency_symbol', 'RM' );
