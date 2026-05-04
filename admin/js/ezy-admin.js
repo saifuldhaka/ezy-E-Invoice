@@ -2,7 +2,7 @@
 (function($) {
     'use strict';
 
-    var cfg = window.ezyInvoice || {};
+    var cfg = window.ezyeinInvoice || {};
     var currency    = cfg.currency    || 'RM';
     var taxRate     = parseFloat(cfg.taxRate)  || 0;
     var taxLabel    = cfg.taxLabel    || 'Tax';

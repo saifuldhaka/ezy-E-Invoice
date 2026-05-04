@@ -4,7 +4,7 @@ Tags:              invoice, billing, pdf, woocommerce, email
 Requires at least: 5.8
 Tested up to:      6.9
 Requires PHP:      7.4
-Stable tag:        2.1.1
+Stable tag: 2.1.2
 License:           GPLv2 or later
 License URI:       https://www.gnu.org/licenses/gpl-2.0.html
 Donate link:       https://ehut.tech/donate/
@@ -101,6 +101,19 @@ The `uninstall.php` file removes all plugin options. Database tables are retaine
 12. **PDF Invoice** – Sample of the generated PDF sent to clients.
 
 == Changelog ==
+
+= 2.1.2 =
+* Fix: Renamed all plugin class prefixes from `Ezy_` to `EZYEIN_` to meet WordPress.org 4-character prefix requirement
+* Fix: Renamed FPDF library class from `FPDF` to `EZYEIN_FPDF` to prevent conflicts with other plugins using FPDF
+* Fix: Renamed all plugin constants from `EZY_INVOICE_*` to `EZYEIN_*` (e.g. `EZYEIN_VERSION`, `EZYEIN_DIR`, `EZYEIN_URL`)
+* Fix: Renamed all option keys from `ezy_invoice_*` to `ezyein_*` to meet prefix requirements
+* Fix: Renamed admin menu slugs from `ezy-*` to `ezyein-*`
+* Fix: Renamed JS script handle and localized object from `ezy-invoice-admin` / `ezyInvoice` to `ezyein-admin` / `ezyeinInvoice`
+* Fix: Replaced fragile `str_replace(site_url, ABSPATH, $url)` path detection with `wp_upload_dir()` for reliable image path resolution in PDF
+* Fix: Improved FPDF binary output handling with proper inline documentation
+* Fix: Added inline documentation for standalone HTML template used in PDF generation
+
+
 
 = 2.1.1 – 2025-04-13 =
 * Initial public release on WordPress.org.

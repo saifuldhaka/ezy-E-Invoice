@@ -1,7 +1,7 @@
 <?php
 if ( ! defined( 'ABSPATH' ) ) exit;
 
-class Ezy_DB {
+class EZYEIN_DB {
 
     public static function create_tables() {
         global $wpdb;
@@ -78,7 +78,7 @@ class Ezy_DB {
             KEY invoice_id (invoice_id)
         ) $c;" );
 
-        update_option( 'ezy_invoice_db_version', EZY_INVOICE_VERSION );
+        update_option( 'ezyein_db_version', EZYEIN_VERSION );
         $upload_dir = wp_upload_dir();
         $pdf_dir    = $upload_dir['basedir'] . '/ezy-invoices';
         if ( ! file_exists( $pdf_dir ) ) {
@@ -104,7 +104,7 @@ class Ezy_DB {
             $vals  = [ $like, $like, $like ];
         }
         $vals[] = $limit; $vals[] = $offset;
-        return $wpdb->get_results( $wpdb->prepare( "SELECT * FROM $t $where ORDER BY contact_name ASC LIMIT %d OFFSET %d", $vals ) ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared,WordPress.DB.PreparedSQLPlaceholders.ReplacementsWrongNumber
+        return $wpdb->get_results( $wpdb->prepare( "SELECT * FROM $t $where ORDER BY contact_name ASC LIMIT %d OFFSET %d", $vals ) ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared,WordPress.DB.PreparedSQLPlaceholders.ReplacementsWrongNumber,WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching,PluginCheck.Security.DirectDB.UnescapedDBParameter
     }
 
     public static function count_clients( $search = '' ) {
@@ -117,12 +117,12 @@ class Ezy_DB {
             $vals  = [ $like, $like, $like ];
         }
         $sql = "SELECT COUNT(*) FROM $t $where"; // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
-        return $vals ? $wpdb->get_var( $wpdb->prepare( $sql, $vals ) ) : $wpdb->get_var( $sql ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared,WordPress.DB.DirectDatabaseQuery
+        return $vals ? $wpdb->get_var( $wpdb->prepare( $sql, $vals ) ) : $wpdb->get_var( $sql ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared,WordPress.DB.DirectDatabaseQuery,WordPress.DB.DirectDatabaseQuery.NoCaching,PluginCheck.Security.DirectDB.UnescapedDBParameter
     }
 
     public static function get_client( $id ) {
         global $wpdb;
-        return $wpdb->get_row( $wpdb->prepare( "SELECT * FROM {$wpdb->prefix}ezy_clients WHERE id = %d", absint( $id ) ) );
+        return $wpdb->get_row( $wpdb->prepare( "SELECT * FROM {$wpdb->prefix}ezy_clients WHERE id = %d", absint( $id ) ) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching
     }
 
     public static function save_client( $data ) {
@@ -143,15 +143,15 @@ class Ezy_DB {
             'status'         => 'active',
         ];
         $id = absint( $data['id'] ?? 0 );
-        if ( $id ) { $wpdb->update( $wpdb->prefix . 'ezy_clients', $fields, [ 'id' => $id ] ); return $id; }
+        if ( $id ) { $wpdb->update( $wpdb->prefix . 'ezy_clients', $fields, [ 'id' => $id ] ); return $id; } // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching
         $fields['created_at'] = current_time( 'mysql' );
-        $wpdb->insert( $wpdb->prefix . 'ezy_clients', $fields );
+        $wpdb->insert( $wpdb->prefix . 'ezy_clients', $fields ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching
         return $wpdb->insert_id;
     }
 
     public static function delete_client( $id ) {
         global $wpdb;
-        $wpdb->update( $wpdb->prefix . 'ezy_clients', [ 'status' => 'deleted' ], [ 'id' => absint( $id ) ] );
+        $wpdb->update( $wpdb->prefix . 'ezy_clients', [ 'status' => 'deleted' ], [ 'id' => absint( $id ) ] ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching
     }
 
     /* ── PRODUCTS ────────────────────────────────────────── */
@@ -169,7 +169,7 @@ class Ezy_DB {
             $vals  = [ $like, $like ];
         }
         $vals[] = $limit; $vals[] = $offset;
-        return $wpdb->get_results( $wpdb->prepare( "SELECT * FROM $t $where ORDER BY name ASC LIMIT %d OFFSET %d", $vals ) ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared,WordPress.DB.PreparedSQLPlaceholders.ReplacementsWrongNumber
+        return $wpdb->get_results( $wpdb->prepare( "SELECT * FROM $t $where ORDER BY name ASC LIMIT %d OFFSET %d", $vals ) ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared,WordPress.DB.PreparedSQLPlaceholders.ReplacementsWrongNumber,WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching,PluginCheck.Security.DirectDB.UnescapedDBParameter
     }
 
     public static function count_products( $search = '' ) {
@@ -182,12 +182,12 @@ class Ezy_DB {
             $vals  = [ $like, $like ];
         }
         $sql = "SELECT COUNT(*) FROM $t $where"; // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
-        return $vals ? $wpdb->get_var( $wpdb->prepare( $sql, $vals ) ) : $wpdb->get_var( $sql ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared,WordPress.DB.DirectDatabaseQuery
+        return $vals ? $wpdb->get_var( $wpdb->prepare( $sql, $vals ) ) : $wpdb->get_var( $sql ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared,WordPress.DB.DirectDatabaseQuery,WordPress.DB.DirectDatabaseQuery.NoCaching,PluginCheck.Security.DirectDB.UnescapedDBParameter
     }
 
     public static function get_product( $id ) {
         global $wpdb;
-        return $wpdb->get_row( $wpdb->prepare( "SELECT * FROM {$wpdb->prefix}ezy_products WHERE id = %d", absint( $id ) ) );
+        return $wpdb->get_row( $wpdb->prepare( "SELECT * FROM {$wpdb->prefix}ezy_products WHERE id = %d", absint( $id ) ) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching
     }
 
     public static function save_product( $data ) {
@@ -202,15 +202,15 @@ class Ezy_DB {
             'status'        => 'active',
         ];
         $id = absint( $data['id'] ?? 0 );
-        if ( $id ) { $wpdb->update( $wpdb->prefix . 'ezy_products', $fields, [ 'id' => $id ] ); return $id; }
+        if ( $id ) { $wpdb->update( $wpdb->prefix . 'ezy_products', $fields, [ 'id' => $id ] ); return $id; } // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching
         $fields['created_at'] = current_time( 'mysql' );
-        $wpdb->insert( $wpdb->prefix . 'ezy_products', $fields );
+        $wpdb->insert( $wpdb->prefix . 'ezy_products', $fields ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching
         return $wpdb->insert_id;
     }
 
     public static function delete_product( $id ) {
         global $wpdb;
-        $wpdb->update( $wpdb->prefix . 'ezy_products', [ 'status' => 'deleted' ], [ 'id' => absint( $id ) ] );
+        $wpdb->update( $wpdb->prefix . 'ezy_products', [ 'status' => 'deleted' ], [ 'id' => absint( $id ) ] ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching
     }
 
     /* ── INVOICES ────────────────────────────────────────── */
@@ -232,7 +232,7 @@ class Ezy_DB {
                 FROM {$wpdb->prefix}ezy_invoices i
                 LEFT JOIN {$wpdb->prefix}ezy_clients c ON i.client_id = c.id
                 $where ORDER BY i.created_at DESC LIMIT %d OFFSET %d";
-        return $wpdb->get_results( $wpdb->prepare( $sql, $vals ) ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared,WordPress.DB.DirectDatabaseQuery
+        return $wpdb->get_results( $wpdb->prepare( $sql, $vals ) ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared,WordPress.DB.DirectDatabaseQuery,WordPress.DB.DirectDatabaseQuery.NoCaching,PluginCheck.Security.DirectDB.UnescapedDBParameter
     }
 
     public static function count_invoices( $status = '', $search = '' ) {
@@ -245,12 +245,12 @@ class Ezy_DB {
             $vals[] = $like; $vals[] = $like; $vals[] = $like;
         }
         $sql = "SELECT COUNT(*) FROM {$wpdb->prefix}ezy_invoices i LEFT JOIN {$wpdb->prefix}ezy_clients c ON i.client_id = c.id $where";
-        return $vals ? $wpdb->get_var( $wpdb->prepare( $sql, $vals ) ) : $wpdb->get_var( $sql ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared,WordPress.DB.DirectDatabaseQuery
+        return $vals ? $wpdb->get_var( $wpdb->prepare( $sql, $vals ) ) : $wpdb->get_var( $sql ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared,WordPress.DB.DirectDatabaseQuery,WordPress.DB.DirectDatabaseQuery.NoCaching,PluginCheck.Security.DirectDB.UnescapedDBParameter
     }
 
     public static function get_invoice( $id ) {
         global $wpdb;
-        return $wpdb->get_row( $wpdb->prepare(
+        return $wpdb->get_row( $wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching
             "SELECT i.*, c.contact_name, c.company_name, c.email AS client_email,
                     c.phone AS client_phone, c.address_line1, c.address_line2,
                     c.city, c.state_province, c.country, c.postal_code,
@@ -262,18 +262,18 @@ class Ezy_DB {
 
     public static function get_invoice_items( $invoice_id ) {
         global $wpdb;
-        return $wpdb->get_results( $wpdb->prepare(
+        return $wpdb->get_results( $wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching
             "SELECT * FROM {$wpdb->prefix}ezy_invoice_items WHERE invoice_id = %d ORDER BY sort_order ASC",
             absint( $invoice_id ) ) );
     }
 
     public static function generate_invoice_number() {
         global $wpdb;
-        $prefix  = get_option( 'ezy_invoice_prefix', 'INV-' );
-        $padding = (int) get_option( 'ezy_invoice_number_padding', 4 );
+        $prefix  = get_option( 'ezyein_prefix', 'INV-' );
+        $padding = (int) get_option( 'ezyein_number_padding', 4 );
         $last    = $wpdb->get_var( "SELECT invoice_number FROM {$wpdb->prefix}ezy_invoices ORDER BY id DESC LIMIT 1" ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared,WordPress.DB.DirectDatabaseQuery
-        $next    = $last ? ( (int) preg_replace( '/[^0-9]/', '', $last ) + 1 ) : (int) get_option( 'ezy_invoice_next_number', 1 );
-        update_option( 'ezy_invoice_next_number', $next + 1 );
+        $next    = $last ? ( (int) preg_replace( '/[^0-9]/', '', $last ) + 1 ) : (int) get_option( 'ezyein_next_number', 1 );
+        update_option( 'ezyein_next_number', $next + 1 );
         return $prefix . str_pad( $next, $padding, '0', STR_PAD_LEFT );
     }
 
@@ -295,12 +295,12 @@ class Ezy_DB {
             'notes'                 => sanitize_textarea_field( $data['notes'] ?? '' ),
             'created_at'            => current_time( 'mysql' ),
         ];
-        $wpdb->insert( $wpdb->prefix . 'ezy_invoices', $row );
+        $wpdb->insert( $wpdb->prefix . 'ezy_invoices', $row ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching
         $invoice_id = $wpdb->insert_id;
         if ( ! $invoice_id ) return false;
         foreach ( $items as $i => $item ) {
             $qty = floatval( $item['quantity'] ); $prc = floatval( $item['unit_price'] );
-            $wpdb->insert( $wpdb->prefix . 'ezy_invoice_items', [
+            $wpdb->insert( $wpdb->prefix . 'ezy_invoice_items', [ // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching
                 'invoice_id'       => $invoice_id,
                 'product_id'       => ! empty( $item['product_id'] ) ? absint( $item['product_id'] ) : null,
                 'item_name'        => sanitize_text_field(     $item['item_name']        ?? '' ),
@@ -315,26 +315,26 @@ class Ezy_DB {
 
     public static function update_invoice_pdf( $id, $path ) {
         global $wpdb;
-        $wpdb->update( $wpdb->prefix . 'ezy_invoices', [ 'pdf_path' => $path ], [ 'id' => absint( $id ) ] );
+        $wpdb->update( $wpdb->prefix . 'ezy_invoices', [ 'pdf_path' => $path ], [ 'id' => absint( $id ) ] ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching
     }
 
     public static function mark_invoice_sent( $id ) {
         global $wpdb;
-        $wpdb->update( $wpdb->prefix . 'ezy_invoices',
+        $wpdb->update( $wpdb->prefix . 'ezy_invoices', // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching
             [ 'email_sent_at' => current_time( 'mysql' ), 'status' => 'sent' ],
             [ 'id' => absint( $id ) ] );
     }
 
     public static function update_invoice_status( $id, $status ) {
         global $wpdb;
-        $wpdb->update( $wpdb->prefix . 'ezy_invoices', [ 'status' => sanitize_text_field( $status ) ], [ 'id' => absint( $id ) ] );
+        $wpdb->update( $wpdb->prefix . 'ezy_invoices', [ 'status' => sanitize_text_field( $status ) ], [ 'id' => absint( $id ) ] ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching
     }
 
     public static function delete_invoice( $id ) {
         global $wpdb;
         $id = absint( $id );
-        $wpdb->delete( $wpdb->prefix . 'ezy_invoice_items', [ 'invoice_id' => $id ] );
-        $wpdb->delete( $wpdb->prefix . 'ezy_invoices',      [ 'id' => $id ] );
+        $wpdb->delete( $wpdb->prefix . 'ezy_invoice_items', [ 'invoice_id' => $id ] ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching
+        $wpdb->delete( $wpdb->prefix . 'ezy_invoices',      [ 'id' => $id ] ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching
     }
 
     public static function get_stats() {

@@ -1,11 +1,11 @@
 <?php
 if ( ! defined( 'ABSPATH' ) ) exit;
 
-class Ezy_PDF {
+class EZYEIN_PDF {
 
     public static function generate( $invoice_id ) {
-        $invoice = Ezy_DB::get_invoice( $invoice_id );
-        $items   = Ezy_DB::get_invoice_items( $invoice_id );
+        $invoice = EZYEIN_DB::get_invoice( $invoice_id );
+        $items   = EZYEIN_DB::get_invoice_items( $invoice_id );
         if ( ! $invoice ) return false;
 
         $upload_dir = wp_upload_dir();
@@ -16,9 +16,9 @@ class Ezy_PDF {
         $filepath = $pdf_dir . '/' . $filename;
 
         // Try FPDF
-        $fpdf_path = EZY_INVOICE_DIR . 'lib/fpdf/fpdf.php';
+        $fpdf_path = EZYEIN_DIR . 'lib/fpdf/fpdf.php';
         if ( file_exists( $fpdf_path ) ) {
-            if ( ! class_exists( 'FPDF' ) ) {
+            if ( ! class_exists( 'EZYEIN_FPDF' ) ) {
                 require_once $fpdf_path;
             }
             return self::generate_with_fpdf( $invoice, $items, $filepath );
@@ -30,27 +30,27 @@ class Ezy_PDF {
 
     private static function generate_with_fpdf( $invoice, $items, $filepath ) {
         $settings = [
-            'company_name'    => Ezy_Settings::get( 'company_name' ),
-            'company_logo'    => Ezy_Settings::get( 'company_logo' ),
-            'address_line1'   => Ezy_Settings::get( 'address_line1' ),
-            'address_line2'   => Ezy_Settings::get( 'address_line2' ),
-            'city'            => Ezy_Settings::get( 'city' ),
-            'state'           => Ezy_Settings::get( 'state' ),
-            'country'         => Ezy_Settings::get( 'country' ),
-            'postal_code'     => Ezy_Settings::get( 'postal_code' ),
-            'phone'           => Ezy_Settings::get( 'phone' ),
-            'email'           => Ezy_Settings::get( 'email' ),
-            'tax_number'      => Ezy_Settings::get( 'tax_number' ),
-            'reg_number'      => Ezy_Settings::get( 'reg_number' ),
-            'currency'        => Ezy_Settings::get( 'currency_symbol', 'RM' ),
-            'date_format'     => Ezy_Settings::get( 'date_format', 'd/m/Y' ),
-            'bank_details'    => Ezy_Settings::get( 'bank_details' ),
-            'tax_label'       => Ezy_Settings::get( 'tax_label', 'SST' ),
-            'sc_label'        => Ezy_Settings::get( 'service_charge_label', 'Service Charge' ),
+            'company_name'    => EZYEIN_Settings::get( 'company_name' ),
+            'company_logo'    => EZYEIN_Settings::get( 'company_logo' ),
+            'address_line1'   => EZYEIN_Settings::get( 'address_line1' ),
+            'address_line2'   => EZYEIN_Settings::get( 'address_line2' ),
+            'city'            => EZYEIN_Settings::get( 'city' ),
+            'state'           => EZYEIN_Settings::get( 'state' ),
+            'country'         => EZYEIN_Settings::get( 'country' ),
+            'postal_code'     => EZYEIN_Settings::get( 'postal_code' ),
+            'phone'           => EZYEIN_Settings::get( 'phone' ),
+            'email'           => EZYEIN_Settings::get( 'email' ),
+            'tax_number'      => EZYEIN_Settings::get( 'tax_number' ),
+            'reg_number'      => EZYEIN_Settings::get( 'reg_number' ),
+            'currency'        => EZYEIN_Settings::get( 'currency_symbol', 'RM' ),
+            'date_format'     => EZYEIN_Settings::get( 'date_format', 'd/m/Y' ),
+            'bank_details'    => EZYEIN_Settings::get( 'bank_details' ),
+            'tax_label'       => EZYEIN_Settings::get( 'tax_label', 'SST' ),
+            'sc_label'        => EZYEIN_Settings::get( 'service_charge_label', 'Service Charge' ),
         ];
 
         try {
-            $pdf = new FPDF( 'P', 'mm', 'A4' );
+            $pdf = new EZYEIN_FPDF( 'P', 'mm', 'A4' );
             $pdf->AddPage();
             $pdf->SetMargins( 15, 15, 15 );
             $pdf->SetAutoPageBreak( true, 20 );
@@ -255,18 +255,16 @@ class Ezy_PDF {
             return $filepath;
 
         } catch ( Exception $e ) {
-            return self::generate_html_fallback( Ezy_DB::get_invoice( $invoice->id ), Ezy_DB::get_invoice_items( $invoice->id ), $filepath );
+            return self::generate_html_fallback( EZYEIN_DB::get_invoice( $invoice->id ), EZYEIN_DB::get_invoice_items( $invoice->id ), $filepath );
         }
     }
 
     private static function url_to_path( $url ) {
+        // Use wp_upload_dir() to reliably convert upload URLs to filesystem paths.
+        // Only logos stored in the uploads directory are supported for PDF embedding.
         $upload_dir = wp_upload_dir();
         if ( strpos( $url, $upload_dir['baseurl'] ) !== false ) {
             return str_replace( $upload_dir['baseurl'], $upload_dir['basedir'], $url );
-        }
-        $site_url = site_url();
-        if ( strpos( $url, $site_url ) !== false ) {
-            return str_replace( $site_url, ABSPATH, $url );
         }
         return false;
     }
@@ -275,21 +273,21 @@ class Ezy_PDF {
         // Save as an HTML file that can be printed as PDF
         $html_path = str_replace( '.pdf', '.html', $filepath );
         $settings  = [
-            'company_name' => Ezy_Settings::get( 'company_name' ),
-            'currency'     => Ezy_Settings::get( 'currency_symbol', 'RM' ),
-            'date_format'  => Ezy_Settings::get( 'date_format', 'd/m/Y' ),
-            'tax_label'    => Ezy_Settings::get( 'tax_label', 'SST' ),
-            'sc_label'     => Ezy_Settings::get( 'service_charge_label', 'Service Charge' ),
-            'bank_details' => Ezy_Settings::get( 'bank_details' ),
-            'address_line1'=> Ezy_Settings::get( 'address_line1' ),
-            'phone'        => Ezy_Settings::get( 'phone' ),
-            'email'        => Ezy_Settings::get( 'email' ),
+            'company_name' => EZYEIN_Settings::get( 'company_name' ),
+            'currency'     => EZYEIN_Settings::get( 'currency_symbol', 'RM' ),
+            'date_format'  => EZYEIN_Settings::get( 'date_format', 'd/m/Y' ),
+            'tax_label'    => EZYEIN_Settings::get( 'tax_label', 'SST' ),
+            'sc_label'     => EZYEIN_Settings::get( 'service_charge_label', 'Service Charge' ),
+            'bank_details' => EZYEIN_Settings::get( 'bank_details' ),
+            'address_line1'=> EZYEIN_Settings::get( 'address_line1' ),
+            'phone'        => EZYEIN_Settings::get( 'phone' ),
+            'email'        => EZYEIN_Settings::get( 'email' ),
         ];
         $fmt = $settings['date_format'];
         $cur = $settings['currency'];
 
         ob_start();
-        include EZY_INVOICE_DIR . 'templates/invoice-pdf-html.php';
+        include EZYEIN_DIR . 'templates/invoice-pdf-html.php';
         $html = ob_get_clean();
         file_put_contents( $html_path, $html );
         return $html_path;

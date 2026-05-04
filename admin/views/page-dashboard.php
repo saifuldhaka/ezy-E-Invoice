@@ -1,7 +1,7 @@
 <?php
 if ( ! defined( 'ABSPATH' ) ) exit;
-$stats    = Ezy_DB::get_stats();
-$currency = Ezy_Settings::get( 'currency_symbol', 'RM' );
+$stats    = EZYEIN_DB::get_stats();
+$currency = EZYEIN_Settings::get( 'currency_symbol', 'RM' );
 ?>
 <div class="wrap ezy-wrap">
   <div class="ezy-header">
@@ -46,16 +46,16 @@ $currency = Ezy_Settings::get( 'currency_symbol', 'RM' );
     <div class="ezy-col-2">
       <div class="ezy-card">
         <h2>Quick Actions</h2>
-        <a href="<?php echo esc_url( admin_url('admin.php?page=ezy-create-invoice') ); ?>" class="button button-primary ezy-btn-block">
+        <a href="<?php echo esc_url( admin_url('admin.php?page=ezyein-create-invoice') ); ?>" class="button button-primary ezy-btn-block">
           <span class="dashicons dashicons-plus-alt2"></span> Create New Invoice
         </a>
-        <a href="<?php echo esc_url( admin_url('admin.php?page=ezy-clients') ); ?>" class="button ezy-btn-block">
+        <a href="<?php echo esc_url( admin_url('admin.php?page=ezyein-clients') ); ?>" class="button ezy-btn-block">
           <span class="dashicons dashicons-admin-users"></span> Manage Clients
         </a>
-        <a href="<?php echo esc_url( admin_url('admin.php?page=ezy-products') ); ?>" class="button ezy-btn-block">
+        <a href="<?php echo esc_url( admin_url('admin.php?page=ezyein-products') ); ?>" class="button ezy-btn-block">
           <span class="dashicons dashicons-cart"></span> Manage Products
         </a>
-        <a href="<?php echo esc_url( admin_url('admin.php?page=ezy-settings') ); ?>" class="button ezy-btn-block">
+        <a href="<?php echo esc_url( admin_url('admin.php?page=ezyein-settings') ); ?>" class="button ezy-btn-block">
           <span class="dashicons dashicons-admin-settings"></span> Settings
         </a>
       </div>
@@ -76,8 +76,8 @@ $currency = Ezy_Settings::get( 'currency_symbol', 'RM' );
           <td><?php echo esc_html( $inv->contact_name . ( $inv->company_name ? ' / ' . $inv->company_name : '' ) ); ?></td>
           <td><?php echo esc_html( $currency . ' ' . number_format( (float) $inv->total, 2 ) ); ?></td>
           <td><span class="ezy-badge ezy-badge-<?php echo esc_attr( $inv->status ); ?>"><?php echo esc_html( ucfirst( $inv->status ) ); ?></span></td>
-          <td><?php echo esc_html( gmdate( Ezy_Settings::get('date_format','d/m/Y'), strtotime( $inv->created_at ) ) ); ?></td>
-          <td><a href="<?php echo esc_url( admin_url('admin.php?page=ezy-invoice-view&id=' . $inv->id) ); ?>" class="button button-small">View</a></td>
+          <td><?php echo esc_html( gmdate( EZYEIN_Settings::get('date_format','d/m/Y'), strtotime( $inv->created_at ) ) ); ?></td>
+          <td><a href="<?php echo esc_url( admin_url('admin.php?page=ezyein-invoice-view&id=' . $inv->id) ); ?>" class="button button-small">View</a></td>
         </tr>
       <?php endforeach; ?>
       </tbody>

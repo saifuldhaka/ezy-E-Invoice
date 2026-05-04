@@ -1,7 +1,7 @@
 <?php
 if ( ! defined( 'ABSPATH' ) ) exit;
 
-class Ezy_Products {
+class EZYEIN_Products {
 
     public static function init() {
         add_action( 'wp_ajax_ezyein_search_products',  [ __CLASS__, 'ajax_search'  ] );
@@ -15,7 +15,7 @@ class Ezy_Products {
         check_ajax_referer( 'ezyein_invoice_nonce', 'nonce' );
         if ( ! current_user_can( 'manage_options' ) ) wp_send_json_error( 'Unauthorized', 403 );
         $search   = sanitize_text_field( wp_unslash( $_GET['q'] ?? '' ) );
-        $products = Ezy_DB::get_products( [ 'search' => $search, 'limit' => 15 ] );
+        $products = EZYEIN_DB::get_products( [ 'search' => $search, 'limit' => 15 ] );
         $results  = [];
         foreach ( $products as $p ) {
             $label     = esc_html( $p->name );
@@ -31,7 +31,7 @@ class Ezy_Products {
         check_ajax_referer( 'ezyein_invoice_nonce', 'nonce' );
         if ( ! current_user_can( 'manage_options' ) ) wp_send_json_error( 'Unauthorized', 403 );
         $id      = absint( $_GET['id'] ?? 0 );
-        $product = Ezy_DB::get_product( $id );
+        $product = EZYEIN_DB::get_product( $id );
         if ( ! $product ) wp_send_json_error( 'Not found', 404 );
         wp_send_json_success( $product );
     }
@@ -39,7 +39,7 @@ class Ezy_Products {
     public static function ajax_save() {
         check_ajax_referer( 'ezyein_invoice_nonce', 'nonce' );
         if ( ! current_user_can( 'manage_options' ) ) wp_send_json_error( 'Unauthorized', 403 );
-        $id = Ezy_DB::save_product( $_POST );
+        $id = EZYEIN_DB::save_product( $_POST );
         if ( ! $id ) wp_send_json_error( 'Could not save product' );
         wp_send_json_success( [ 'id' => $id, 'message' => 'Product saved successfully.' ] );
     }
@@ -47,7 +47,7 @@ class Ezy_Products {
     public static function ajax_delete() {
         check_ajax_referer( 'ezyein_invoice_nonce', 'nonce' );
         if ( ! current_user_can( 'manage_options' ) ) wp_send_json_error( 'Unauthorized', 403 );
-        Ezy_DB::delete_product( absint( $_POST['id'] ?? 0 ) );
+        EZYEIN_DB::delete_product( absint( $_POST['id'] ?? 0 ) );
         wp_send_json_success( [ 'message' => 'Product deleted.' ] );
     }
 
@@ -63,7 +63,7 @@ class Ezy_Products {
             $wc_product = wc_get_product( $wc_post->ID );
             if ( ! $wc_product ) continue;
             global $wpdb;
-            $exists = $wpdb->get_var( $wpdb->prepare(
+            $exists = $wpdb->get_var( $wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching
                 "SELECT id FROM {$wpdb->prefix}ezy_products WHERE wc_product_id = %d AND status = 'active'",
                 $wc_post->ID ) );
             $data = [
@@ -75,7 +75,7 @@ class Ezy_Products {
                 'wc_product_id' => $wc_post->ID,
             ];
             if ( $exists ) { $data['id'] = $exists; }
-            Ezy_DB::save_product( $data );
+            EZYEIN_DB::save_product( $data );
             $synced++;
         }
         wp_send_json_success( [ 'message' => "Synced $synced WooCommerce products." ] );

@@ -1,7 +1,7 @@
 <?php
 if ( ! defined( 'ABSPATH' ) ) exit;
 
-class Ezy_Invoices {
+class EZYEIN_Invoices {
 
     public static function init() {
         add_action( 'wp_ajax_ezyein_create_invoice',  [ __CLASS__, 'ajax_create'  ] );
@@ -14,7 +14,7 @@ class Ezy_Invoices {
     public static function ajax_get_number() {
         check_ajax_referer( 'ezyein_invoice_nonce', 'nonce' );
         if ( ! current_user_can( 'manage_options' ) ) wp_send_json_error( 'Unauthorized', 403 );
-        wp_send_json_success( [ 'number' => Ezy_DB::generate_invoice_number() ] );
+        wp_send_json_success( [ 'number' => EZYEIN_DB::generate_invoice_number() ] );
     }
 
     public static function ajax_create() {
@@ -25,7 +25,7 @@ class Ezy_Invoices {
         if ( empty( $_POST['client_id'] ) ) wp_send_json_error( 'Please select a client.' );
         if ( empty( $_POST['items'] ) )     wp_send_json_error( 'Please add at least one item.' );
 
-        $items_raw = wp_unslash( $_POST['items'] );
+        $items_raw = wp_unslash( $_POST['items'] ); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- JSON string sanitized field-by-field after decode
         $items     = json_decode( $items_raw, true );
         if ( ! is_array( $items ) || empty( $items ) ) wp_send_json_error( 'Invalid items data.' );
 
@@ -41,10 +41,10 @@ class Ezy_Invoices {
         }, $items );
 
         // Gather settings
-        $tax_rate    = (float) Ezy_Settings::get( 'tax_rate',    6 );
-        $sc_rate     = (float) Ezy_Settings::get( 'service_charge_rate', 10 );
-        $tax_enabled = Ezy_Settings::get( 'tax_enabled',            '1' );
-        $sc_enabled  = Ezy_Settings::get( 'service_charge_enabled', '' );
+        $tax_rate    = (float) EZYEIN_Settings::get( 'tax_rate',    6 );
+        $sc_rate     = (float) EZYEIN_Settings::get( 'service_charge_rate', 10 );
+        $tax_enabled = EZYEIN_Settings::get( 'tax_enabled',            '1' );
+        $sc_enabled  = EZYEIN_Settings::get( 'service_charge_enabled', '' );
 
         // Override from form if present
         $tax_rate    = isset( $_POST['tax_rate'] )              ? (float) $_POST['tax_rate']              : $tax_rate;
@@ -60,7 +60,7 @@ class Ezy_Invoices {
         $discount   = round( floatval( $_POST['discount_amount'] ?? 0 ), 2 );
         $total      = round( $subtotal + $tax_amount + $sc_amount - $discount, 2 );
 
-        $payment_terms = (int) Ezy_Settings::get( 'payment_terms', 30 );
+        $payment_terms = (int) EZYEIN_Settings::get( 'payment_terms', 30 );
         $issue_date    = gmdate( 'Y-m-d' );
         $due_date      = gmdate( 'Y-m-d', strtotime( "+{$payment_terms} days" ) );
 
@@ -68,7 +68,7 @@ class Ezy_Invoices {
         if ( ! empty( $_POST['due_date'] ) )   $due_date   = sanitize_text_field( wp_unslash( $_POST['due_date'] ) );
 
         $invoice_data = [
-            'invoice_number'        => sanitize_text_field( wp_unslash( $_POST['invoice_number'] ?? Ezy_DB::generate_invoice_number() ) ),
+            'invoice_number'        => sanitize_text_field( wp_unslash( $_POST['invoice_number'] ?? EZYEIN_DB::generate_invoice_number() ) ),
             'client_id'             => absint( $_POST['client_id'] ),
             'issue_date'            => $issue_date,
             'due_date'              => $due_date,
@@ -83,19 +83,19 @@ class Ezy_Invoices {
             'notes'                 => sanitize_textarea_field( wp_unslash( $_POST['notes'] ?? '' ) ),
         ];
 
-        $invoice_id = Ezy_DB::save_invoice( $invoice_data, $items );
+        $invoice_id = EZYEIN_DB::save_invoice( $invoice_data, $items );
         if ( ! $invoice_id ) wp_send_json_error( 'Failed to save invoice. Please try again.' );
 
         // Generate PDF
-        $pdf_path = Ezy_PDF::generate( $invoice_id );
-        if ( $pdf_path ) Ezy_DB::update_invoice_pdf( $invoice_id, $pdf_path );
+        $pdf_path = EZYEIN_PDF::generate( $invoice_id );
+        if ( $pdf_path ) EZYEIN_DB::update_invoice_pdf( $invoice_id, $pdf_path );
 
         // Send email
-        $invoice  = Ezy_DB::get_invoice( $invoice_id );
-        $email_ok = Ezy_Email::send( $invoice, $pdf_path );
-        if ( $email_ok ) Ezy_DB::mark_invoice_sent( $invoice_id );
+        $invoice  = EZYEIN_DB::get_invoice( $invoice_id );
+        $email_ok = EZYEIN_Email::send( $invoice, $pdf_path );
+        if ( $email_ok ) EZYEIN_DB::mark_invoice_sent( $invoice_id );
 
-        $admin_url = admin_url( 'admin.php?page=ezy-invoice-view&id=' . $invoice_id );
+        $admin_url = admin_url( 'admin.php?page=ezyein-invoice-view&id=' . $invoice_id );
         wp_send_json_success( [
             'invoice_id'     => $invoice_id,
             'invoice_number' => $invoice_data['invoice_number'],
@@ -111,11 +111,11 @@ class Ezy_Invoices {
         check_ajax_referer( 'ezyein_invoice_nonce', 'nonce' );
         if ( ! current_user_can( 'manage_options' ) ) wp_send_json_error( 'Unauthorized', 403 );
         $id      = absint( $_POST['id'] ?? 0 );
-        $invoice = Ezy_DB::get_invoice( $id );
+        $invoice = EZYEIN_DB::get_invoice( $id );
         if ( ! $invoice ) wp_send_json_error( 'Invoice not found.' );
         // Delete PDF file if exists
         if ( ! empty( $invoice->pdf_path ) && file_exists( $invoice->pdf_path ) ) wp_delete_file( $invoice->pdf_path );
-        Ezy_DB::delete_invoice( $id );
+        EZYEIN_DB::delete_invoice( $id );
         wp_send_json_success( [ 'message' => 'Invoice deleted.' ] );
     }
 
@@ -123,15 +123,15 @@ class Ezy_Invoices {
         check_ajax_referer( 'ezyein_invoice_nonce', 'nonce' );
         if ( ! current_user_can( 'manage_options' ) ) wp_send_json_error( 'Unauthorized', 403 );
         $id      = absint( $_POST['id'] ?? 0 );
-        $invoice = Ezy_DB::get_invoice( $id );
+        $invoice = EZYEIN_DB::get_invoice( $id );
         if ( ! $invoice ) wp_send_json_error( 'Invoice not found.' );
         $pdf_path = $invoice->pdf_path;
         if ( empty( $pdf_path ) || ! file_exists( $pdf_path ) ) {
-            $pdf_path = Ezy_PDF::generate( $id );
-            if ( $pdf_path ) Ezy_DB::update_invoice_pdf( $id, $pdf_path );
+            $pdf_path = EZYEIN_PDF::generate( $id );
+            if ( $pdf_path ) EZYEIN_DB::update_invoice_pdf( $id, $pdf_path );
         }
-        $ok = Ezy_Email::send( $invoice, $pdf_path );
-        if ( $ok ) Ezy_DB::mark_invoice_sent( $id );
+        $ok = EZYEIN_Email::send( $invoice, $pdf_path );
+        if ( $ok ) EZYEIN_DB::mark_invoice_sent( $id );
         if ( $ok ) wp_send_json_success( [ 'message' => 'Invoice resent successfully!' ] );
         else       wp_send_json_error( 'Failed to send email. Check your email settings.' );
     }
@@ -140,7 +140,7 @@ class Ezy_Invoices {
         check_ajax_referer( 'ezyein_invoice_nonce', 'nonce' );
         if ( ! current_user_can( 'manage_options' ) ) wp_send_json_error( 'Unauthorized', 403 );
         $id = absint( $_POST['id'] ?? 0 );
-        Ezy_DB::update_invoice_status( $id, 'paid' );
+        EZYEIN_DB::update_invoice_status( $id, 'paid' );
         wp_send_json_success( [ 'message' => 'Invoice marked as paid.' ] );
     }
 }

@@ -1,12 +1,12 @@
 <?php
 if ( ! defined( 'ABSPATH' ) ) exit;
 
-class Ezy_Settings {
+class EZYEIN_Settings {
 
-    const GROUP = 'ezy_invoice_settings';
+    const GROUP = 'ezyein_settings';
 
     public static function get( $key, $default = '' ) {
-        return get_option( 'ezy_invoice_' . $key, $default );
+        return get_option( 'ezyein_' . $key, $default );
     }
 
     public static function sections() {
@@ -87,7 +87,7 @@ class Ezy_Settings {
                 if ( $field['type'] === 'textarea' ) $cb = 'sanitize_textarea_field';
                 if ( $field['type'] === 'number' )   $cb = 'floatval';
                 if ( $field['type'] === 'checkbox' ) $cb = 'absint';
-                register_setting( self::GROUP, 'ezy_invoice_' . $key, [ 'sanitize_callback' => $cb ] );
+                register_setting( self::GROUP, 'ezyein_' . $key, [ 'sanitize_callback' => $cb ] );
             }
         }
     }

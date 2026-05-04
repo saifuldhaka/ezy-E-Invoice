@@ -2,22 +2,22 @@
 if ( ! defined( 'ABSPATH' ) ) exit;
 if ( ! current_user_can( 'manage_options' ) ) wp_die( 'Insufficient permissions.' );
 
-$currency        = Ezy_Settings::get( 'currency_symbol', 'RM' );
-$tax_enabled     = Ezy_Settings::get( 'tax_enabled', '1' );
-$tax_rate        = Ezy_Settings::get( 'tax_rate', 6 );
-$tax_label       = Ezy_Settings::get( 'tax_label', 'SST' );
-$sc_enabled      = Ezy_Settings::get( 'service_charge_enabled', '' );
-$sc_rate         = Ezy_Settings::get( 'service_charge_rate', 10 );
-$sc_label        = Ezy_Settings::get( 'service_charge_label', 'Service Charge' );
-$discount_enabled= Ezy_Settings::get( 'discount_enabled', '' );
-$default_notes   = Ezy_Settings::get( 'default_notes', '' );
-$payment_terms   = (int) Ezy_Settings::get( 'payment_terms', 30 );
-$next_number     = Ezy_DB::generate_invoice_number();
+$currency        = EZYEIN_Settings::get( 'currency_symbol', 'RM' );
+$tax_enabled     = EZYEIN_Settings::get( 'tax_enabled', '1' );
+$tax_rate        = EZYEIN_Settings::get( 'tax_rate', 6 );
+$tax_label       = EZYEIN_Settings::get( 'tax_label', 'SST' );
+$sc_enabled      = EZYEIN_Settings::get( 'service_charge_enabled', '' );
+$sc_rate         = EZYEIN_Settings::get( 'service_charge_rate', 10 );
+$sc_label        = EZYEIN_Settings::get( 'service_charge_label', 'Service Charge' );
+$discount_enabled= EZYEIN_Settings::get( 'discount_enabled', '' );
+$default_notes   = EZYEIN_Settings::get( 'default_notes', '' );
+$payment_terms   = (int) EZYEIN_Settings::get( 'payment_terms', 30 );
+$next_number     = EZYEIN_DB::generate_invoice_number();
 $issue_date      = gmdate('Y-m-d');
 $due_date        = gmdate('Y-m-d', strtotime("+{$payment_terms} days"));
 // Pre-select client if coming from client page
-$preselect_client_id = absint( $_GET['client_id'] ?? 0 );
-$preselect_client    = $preselect_client_id ? Ezy_DB::get_client( $preselect_client_id ) : null;
+$preselect_client_id = absint( $_GET['client_id'] ?? 0 ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+$preselect_client    = $preselect_client_id ? EZYEIN_DB::get_client( $preselect_client_id ) : null;
 ?>
 <div class="wrap ezy-wrap">
   <div class="ezy-header">
@@ -28,7 +28,7 @@ $preselect_client    = $preselect_client_id ? Ezy_DB::get_client( $preselect_cli
     <span class="dashicons dashicons-yes-alt"></span>
     <strong id="ezy-success-msg"></strong>
     <a href="#" id="ezy-view-invoice-link" class="button button-primary" style="margin-left:10px;">View Invoice</a>
-    <a href="<?php echo esc_url( admin_url('admin.php?page=ezy-create-invoice') ); ?>" class="button" style="margin-left:5px;">Create Another</a>
+    <a href="<?php echo esc_url( admin_url('admin.php?page=ezyein-create-invoice') ); ?>" class="button" style="margin-left:5px;">Create Another</a>
   </div>
 
   <form id="ezy-invoice-form">
@@ -54,7 +54,7 @@ $preselect_client    = $preselect_client_id ? Ezy_DB::get_client( $preselect_cli
             </div>
             <?php endif; ?>
           </div>
-          <p class="description">Can't find client? <a href="<?php echo esc_url( admin_url('admin.php?page=ezy-clients') ); ?>">Manage clients</a>.</p>
+          <p class="description">Can't find client? <a href="<?php echo esc_url( admin_url('admin.php?page=ezyein-clients') ); ?>">Manage clients</a>.</p>
         </div>
 
         <!-- Invoice Items -->

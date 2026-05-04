@@ -1,29 +1,29 @@
 <?php
 if ( ! defined( 'ABSPATH' ) ) exit;
 
-class Ezy_Email {
+class EZYEIN_Email {
 
     public static function send( $invoice, $attachment_path = '' ) {
         if ( empty( $invoice->client_email ) ) return false;
 
-        $subject_tpl = Ezy_Settings::get( 'email_subject', 'Your Invoice {invoice_number} from {company_name}' );
-        $body_tpl    = Ezy_Settings::get( 'email_body' );
+        $subject_tpl = EZYEIN_Settings::get( 'email_subject', 'Your Invoice {invoice_number} from {company_name}' );
+        $body_tpl    = EZYEIN_Settings::get( 'email_body' );
         if ( empty( $body_tpl ) ) {
             $body_tpl = "Dear {client_name},\n\nPlease find attached your invoice {invoice_number}.\n\nAmount Due: {currency}{total}\nDue Date: {due_date}\n\n{bank_details}\n\nThank you for your business!\n\n{company_name}";
         }
 
-        $subject = Ezy_Settings::format_placeholders( $subject_tpl, $invoice );
-        $body    = Ezy_Settings::format_placeholders( $body_tpl,    $invoice );
+        $subject = EZYEIN_Settings::format_placeholders( $subject_tpl, $invoice );
+        $body    = EZYEIN_Settings::format_placeholders( $body_tpl,    $invoice );
 
         // Headers
-        $from_name  = Ezy_Settings::get( 'email_from_name' )  ?: get_bloginfo( 'name' );
-        $from_email = Ezy_Settings::get( 'email_from_email' ) ?: get_option( 'admin_email' );
+        $from_name  = EZYEIN_Settings::get( 'email_from_name' )  ?: get_bloginfo( 'name' );
+        $from_email = EZYEIN_Settings::get( 'email_from_email' ) ?: get_option( 'admin_email' );
         $headers    = [
             'Content-Type: text/plain; charset=UTF-8',
             'From: ' . $from_name . ' <' . $from_email . '>',
         ];
-        $cc  = Ezy_Settings::get( 'email_cc' );
-        $bcc = Ezy_Settings::get( 'email_bcc' );
+        $cc  = EZYEIN_Settings::get( 'email_cc' );
+        $bcc = EZYEIN_Settings::get( 'email_bcc' );
         if ( $cc )  $headers[] = 'Cc: '  . $cc;
         if ( $bcc ) $headers[] = 'Bcc: ' . $bcc;
 
@@ -44,7 +44,7 @@ class Ezy_Email {
 
     private static function build_html_body( $invoice, $plain_body ) {
         $plain_body_html = nl2br( esc_html( $plain_body ) );
-        $company         = esc_html( Ezy_Settings::get( 'company_name' ) );
+        $company         = esc_html( EZYEIN_Settings::get( 'company_name' ) );
         return "<!DOCTYPE html><html><head><meta charset='UTF-8'>
 <style>
   body { font-family: Arial, sans-serif; font-size: 14px; color: #333; }

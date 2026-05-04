@@ -2,15 +2,15 @@
 if ( ! defined( 'ABSPATH' ) ) exit;
 if ( ! current_user_can( 'manage_options' ) ) wp_die( 'Insufficient permissions.' );
 
-$id      = absint( $_GET['id'] ?? 0 );
-$invoice = Ezy_DB::get_invoice( $id );
+$id      = absint( $_GET['id'] ?? 0 ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+$invoice = EZYEIN_DB::get_invoice( $id );
 if ( ! $invoice ) wp_die( 'Invoice not found.' );
-$items    = Ezy_DB::get_invoice_items( $id );
-$currency = Ezy_Settings::get( 'currency_symbol', 'RM' );
-$fmt      = Ezy_Settings::get( 'date_format', 'd/m/Y' );
-$tax_lbl  = Ezy_Settings::get( 'tax_label', 'SST' );
-$sc_lbl   = Ezy_Settings::get( 'service_charge_label', 'Service Charge' );
-$company  = Ezy_Settings::get( 'company_name' );
+$items    = EZYEIN_DB::get_invoice_items( $id );
+$currency = EZYEIN_Settings::get( 'currency_symbol', 'RM' );
+$fmt      = EZYEIN_Settings::get( 'date_format', 'd/m/Y' );
+$tax_lbl  = EZYEIN_Settings::get( 'tax_label', 'SST' );
+$sc_lbl   = EZYEIN_Settings::get( 'service_charge_label', 'Service Charge' );
+$company  = EZYEIN_Settings::get( 'company_name' );
 $is_overdue = $invoice->status === 'sent' && strtotime( $invoice->due_date ) < time();
 $display_status = $is_overdue ? 'overdue' : $invoice->status;
 ?>
@@ -22,7 +22,7 @@ $display_status = $is_overdue ? 'overdue' : $invoice->status;
       <span class="ezy-badge ezy-badge-<?php echo esc_attr($display_status); ?>"><?php echo esc_html(ucfirst($display_status)); ?></span>
     </h1>
     <div class="ezy-header-actions">
-      <a href="<?php echo esc_url( admin_url('admin.php?page=ezy-invoices') ); ?>" class="button">&larr; All Invoices</a>
+      <a href="<?php echo esc_url( admin_url('admin.php?page=ezyein-invoices') ); ?>" class="button">&larr; All Invoices</a>
       <button class="button ezy-resend-invoice" data-id="<?php echo (int) $id; ?>">
         <span class="dashicons dashicons-email-alt"></span> Resend Email
       </button>
@@ -51,12 +51,12 @@ $display_status = $is_overdue ? 'overdue' : $invoice->status;
     <!-- Header -->
     <div class="ezy-inv-header">
       <div class="ezy-inv-from">
-        <?php $logo = Ezy_Settings::get('company_logo'); if ($logo) : ?>
+        <?php $logo = EZYEIN_Settings::get('company_logo'); if ($logo) : ?>
         <img src="<?php echo esc_url($logo); ?>" alt="<?php echo esc_attr($company); ?>" class="ezy-inv-logo" />
         <?php endif; ?>
         <strong class="ezy-inv-company"><?php echo esc_html( $company ); ?></strong>
         <?php foreach ( ['address_line1','address_line2','city','state','country','postal_code','phone','email','tax_number'] as $f ) : ?>
-          <?php $val = Ezy_Settings::get($f); if ($val) echo '<div>' . esc_html($val) . '</div>'; ?>
+          <?php $val = EZYEIN_Settings::get($f); if ($val) echo '<div>' . esc_html($val) . '</div>'; ?>
         <?php endforeach; ?>
       </div>
       <div class="ezy-inv-title-block">
@@ -135,13 +135,13 @@ $display_status = $is_overdue ? 'overdue' : $invoice->status;
     </div>
 
     <!-- Notes -->
-    <?php if ($invoice->notes || Ezy_Settings::get('bank_details')) : ?>
+    <?php if ($invoice->notes || EZYEIN_Settings::get('bank_details')) : ?>
     <div class="ezy-inv-notes">
       <?php if ($invoice->notes) : ?>
         <div class="ezy-inv-section-label">NOTES / TERMS</div>
         <p><?php echo nl2br(esc_html($invoice->notes)); ?></p>
       <?php endif; ?>
-      <?php $bank = Ezy_Settings::get('bank_details'); if ($bank) : ?>
+      <?php $bank = EZYEIN_Settings::get('bank_details'); if ($bank) : ?>
         <div class="ezy-inv-section-label">PAYMENT DETAILS</div>
         <p><?php echo nl2br(esc_html($bank)); ?></p>
       <?php endif; ?>

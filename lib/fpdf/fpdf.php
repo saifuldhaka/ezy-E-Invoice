@@ -8,7 +8,7 @@ if ( ! defined( 'ABSPATH' ) ) exit; // phpcs:ignore
 * Author:  Olivier PLATHEY                                                     *
 *******************************************************************************/
 
-class FPDF
+class EZYEIN_FPDF
 {
 const VERSION = '1.86';
 protected $page;               // current page number
@@ -1011,7 +1011,7 @@ function Output($dest='', $name='', $isUTF8=false)
 				header('Cache-Control: private, max-age=0, must-revalidate');
 				header('Pragma: public');
 			}
-			echo $this->buffer; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+			echo $this->buffer; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Raw binary PDF data; cannot be escaped. Only triggered when Output() streams to browser, not used in this plugin (we always save to file).
 			break;
 		case 'D':
 			// Download file
@@ -1020,7 +1020,7 @@ function Output($dest='', $name='', $isUTF8=false)
 			header('Content-Disposition: attachment; '.$this->_httpencode('filename',$name,$isUTF8));
 			header('Cache-Control: private, max-age=0, must-revalidate');
 			header('Pragma: public');
-			echo $this->buffer; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+			echo $this->buffer; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Raw binary PDF data; cannot be escaped. Only triggered when Output() streams to browser, not used in this plugin (we always save to file).
 			break;
 		case 'F':
 			// Save to local file
@@ -1272,7 +1272,7 @@ protected function _parsejpg($file)
 protected function _parsepng($file)
 {
 	// Extract info from a PNG file
-	$f = fopen($file,'rb');
+	$f = fopen($file,'rb'); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_fopen
 	if(!$f)
 		$this->Error('Can\'t open image file: '.$file);
 	$info = $this->_parsepngstream($f,$file);
@@ -1412,7 +1412,7 @@ protected function _readstream($f, $n)
 	$res = '';
 	while($n>0 && !feof($f))
 	{
-		$s = fread($f,$n);
+		$s = fread($f,$n); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_fread
 		if($s===false)
 			$this->Error('Error while reading stream');
 		$n -= strlen($s);
@@ -1445,10 +1445,10 @@ protected function _parsegif($file)
 	imagepng($im);
 	$data = ob_get_clean();
 	imagedestroy($im);
-	$f = fopen('php://temp','rb+');
+	$f = fopen('php://temp','rb+'); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_fopen
 	if(!$f)
 		$this->Error('Unable to create memory stream');
-	fwrite($f,$data);
+	fwrite($f,$data); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_fwrite
 	rewind($f);
 	$info = $this->_parsepngstream($f,$file);
 	fclose($f); // phpcs:ignore WordPress.WP.AlternativeFunctions

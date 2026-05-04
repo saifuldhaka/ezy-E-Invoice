@@ -2,12 +2,12 @@
 if ( ! defined( 'ABSPATH' ) ) exit;
 if ( ! current_user_can( 'manage_options' ) ) wp_die( 'Insufficient permissions.' );
 
-$search  = sanitize_text_field( wp_unslash( $_GET['s'] ?? '' ) );
-$paged   = max( 1, absint( wp_unslash( $_GET['paged'] ?? 1 ) ) );
+$search  = sanitize_text_field( wp_unslash( $_GET['s'] ?? '' ) ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+$paged   = max( 1, absint( wp_unslash( $_GET['paged'] ?? 1 ) ) ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 $perpage = 20;
 $offset  = ( $paged - 1 ) * $perpage;
-$total   = Ezy_DB::count_clients( $search );
-$clients = Ezy_DB::get_clients( [ 'search' => $search, 'limit' => $perpage, 'offset' => $offset ] );
+$total   = EZYEIN_DB::count_clients( $search );
+$clients = EZYEIN_DB::get_clients( [ 'search' => $search, 'limit' => $perpage, 'offset' => $offset ] );
 $pages   = ceil( $total / $perpage );
 ?>
 <div class="wrap ezy-wrap">
@@ -19,10 +19,10 @@ $pages   = ceil( $total / $perpage );
 
   <div class="ezy-card">
     <form method="get" action="" class="ezy-search-form">
-      <input type="hidden" name="page" value="ezy-clients" />
+      <input type="hidden" name="page" value="ezyein-clients" />
       <input type="search" name="s" value="<?php echo esc_attr( $search ); ?>" placeholder="Search clients…" class="ezy-search-input" />
       <button type="submit" class="button">Search</button>
-      <?php if ( $search ) : ?><a href="?page=ezy-clients" class="button">Clear</a><?php endif; ?>
+      <?php if ( $search ) : ?><a href="?page=ezyein-clients" class="button">Clear</a><?php endif; ?>
     </form>
 
     <p class="ezy-count"><?php echo (int) $total; ?> client(s) found</p>
@@ -47,7 +47,7 @@ $pages   = ceil( $total / $perpage );
           <td class="ezy-actions">
             <button class="button button-small ezy-edit-client" data-id="<?php echo (int) $c->id; ?>">Edit</button>
             <button class="button button-small button-link-delete ezy-delete-client" data-id="<?php echo (int) $c->id; ?>" data-name="<?php echo esc_attr( $c->contact_name ); ?>">Delete</button>
-            <a class="button button-small" href="<?php echo esc_url( admin_url( 'admin.php?page=ezy-create-invoice&client_id=' . $c->id ) ); ?>">New Invoice</a>
+            <a class="button button-small" href="<?php echo esc_url( admin_url( 'admin.php?page=ezyein-create-invoice&client_id=' . $c->id ) ); ?>">New Invoice</a>
           </td>
         </tr>
         <?php endforeach; ?>
@@ -58,7 +58,7 @@ $pages   = ceil( $total / $perpage );
     <?php if ( $pages > 1 ) : ?>
     <div class="ezy-pagination">
       <?php for ( $i = 1; $i <= $pages; $i++ ) : ?>
-        <a href="?page=ezy-clients&paged=<?php echo (int) $i; ?><?php echo $search ? '&s=' . urlencode($search) : ''; ?>"
+        <a href="?page=ezyein-clients&paged=<?php echo (int) $i; ?><?php echo $search ? '&s=' . urlencode($search) : ''; ?>"
            class="button<?php echo $i === $paged ? ' button-primary' : ''; ?>"><?php echo (int) $i; ?></a>
       <?php endfor; ?>
     </div>

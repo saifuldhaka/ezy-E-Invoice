@@ -1,3 +1,15 @@
+## [2.1.2] - 2026-05-04
+
+### Fixed
+- Renamed all plugin class prefixes `Ezy_*` → `EZYEIN_*` to satisfy WordPress.org 4-character prefix requirement
+- Renamed bundled FPDF library class `FPDF` → `EZYEIN_FPDF` to avoid conflicts with other plugins
+- Renamed plugin constants `EZY_INVOICE_*` → `EZYEIN_*`
+- Renamed all database option keys `ezy_invoice_*` → `ezyein_*`
+- Renamed admin menu slugs `ezy-*` → `ezyein-*`
+- Renamed JS script handle/object `ezy-invoice-admin`/`ezyInvoice` → `ezyein-admin`/`ezyeinInvoice`
+- Replaced fragile ABSPATH path detection with `wp_upload_dir()` in PDF generator
+- Improved FPDF binary output and HTML template inline documentation
+
 # Changelog
 
 All notable changes to **ezy E Invoice** are documented here.

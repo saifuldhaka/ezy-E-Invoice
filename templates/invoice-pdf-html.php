@@ -1,4 +1,14 @@
-<?php if (!defined('ABSPATH')) exit; ?>
+<?php
+/**
+ * Standalone HTML invoice template used for offline PDF generation and
+ * email attachment fallback. This file is captured via ob_start() and saved
+ * to disk — it is NOT rendered inside WordPress. Inline <style> is required
+ * for a self-contained HTML document and does not use wp_enqueue_style().
+ *
+ * @package ezy-e-invoice
+ */
+if ( ! defined( 'ABSPATH' ) ) exit;
+?>
 <!DOCTYPE html>
 <html>
 <head>

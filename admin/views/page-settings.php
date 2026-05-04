@@ -3,9 +3,9 @@ if ( ! defined( 'ABSPATH' ) ) exit;
 if ( ! current_user_can( 'manage_options' ) ) wp_die( 'Insufficient permissions.' );
 
 if ( isset( $_POST['ezy_settings_nonce'] ) && wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['ezy_settings_nonce'] ) ), 'ezy_save_settings' ) ) {
-    foreach ( Ezy_Settings::sections() as $section_id => $section ) {
+    foreach ( EZYEIN_Settings::sections() as $section_id => $section ) {
         foreach ( $section['fields'] as $key => $field ) {
-            $opt_key = 'ezy_invoice_' . $key;
+            $opt_key = 'ezyein_' . $key;
             if ( $field['type'] === 'checkbox' ) {
                 update_option( $opt_key, isset( $_POST[ $opt_key ] ) ? '1' : '' );
             } elseif ( $field['type'] === 'textarea' ) {
@@ -24,7 +24,7 @@ if ( isset( $_POST['ezy_settings_nonce'] ) && wp_verify_nonce( sanitize_text_fie
     echo '<div class="notice notice-success is-dismissible"><p><strong>Settings saved successfully!</strong></p></div>';
 }
 
-$sections = Ezy_Settings::sections();
+$sections = EZYEIN_Settings::sections();
 $active   = sanitize_text_field( wp_unslash( $_GET['tab'] ?? 'company' ) );
 ?>
 <div class="wrap ezy-wrap">
@@ -34,7 +34,7 @@ $active   = sanitize_text_field( wp_unslash( $_GET['tab'] ?? 'company' ) );
 
   <nav class="nav-tab-wrapper ezy-tabs">
     <?php foreach ( $sections as $sid => $sec ) : ?>
-    <a href="?page=ezy-settings&tab=<?php echo esc_attr( $sid ); ?>"
+    <a href="?page=ezyein-settings&tab=<?php echo esc_attr( $sid ); ?>"
        class="nav-tab <?php echo $active === $sid ? 'nav-tab-active' : ''; ?>">
       <span class="dashicons <?php echo esc_attr( $sec['icon'] ); ?>"></span>
       <?php echo esc_html( $sec['title'] ); ?>
@@ -51,7 +51,7 @@ $active   = sanitize_text_field( wp_unslash( $_GET['tab'] ?? 'company' ) );
       <table class="form-table ezy-form-table">
         <?php foreach ( $sec['fields'] as $key => $field ) : ?>
         <?php
-            $opt_key  = 'ezy_invoice_' . $key;
+            $opt_key  = 'ezyein_' . $key;
             $value    = get_option( $opt_key, $field['default'] ?? '' );
             $required = ! empty( $field['required'] ) ? 'required' : '';
             $step     = $field['step'] ?? '1';

@@ -2,14 +2,14 @@
 if ( ! defined( 'ABSPATH' ) ) exit;
 if ( ! current_user_can( 'manage_options' ) ) wp_die( 'Insufficient permissions.' );
 
-$search   = sanitize_text_field( wp_unslash( $_GET['s'] ?? '' ) );
-$paged    = max( 1, absint( wp_unslash( $_GET['paged'] ?? 1 ) ) );
+$search   = sanitize_text_field( wp_unslash( $_GET['s'] ?? '' ) ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+$paged    = max( 1, absint( wp_unslash( $_GET['paged'] ?? 1 ) ) ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 $perpage  = 20;
 $offset   = ( $paged - 1 ) * $perpage;
-$total    = Ezy_DB::count_products( $search );
-$products = Ezy_DB::get_products( [ 'search' => $search, 'limit' => $perpage, 'offset' => $offset ] );
+$total    = EZYEIN_DB::count_products( $search );
+$products = EZYEIN_DB::get_products( [ 'search' => $search, 'limit' => $perpage, 'offset' => $offset ] );
 $pages    = ceil( $total / $perpage );
-$currency = Ezy_Settings::get( 'currency_symbol', 'RM' );
+$currency = EZYEIN_Settings::get( 'currency_symbol', 'RM' );
 $wc_active = class_exists( 'WooCommerce' );
 ?>
 <div class="wrap ezy-wrap">
@@ -26,10 +26,10 @@ $wc_active = class_exists( 'WooCommerce' );
 
   <div class="ezy-card">
     <form method="get" action="" class="ezy-search-form">
-      <input type="hidden" name="page" value="ezy-products" />
+      <input type="hidden" name="page" value="ezyein-products" />
       <input type="search" name="s" value="<?php echo esc_attr( $search ); ?>" placeholder="Search products…" class="ezy-search-input" />
       <button type="submit" class="button">Search</button>
-      <?php if ( $search ) : ?><a href="?page=ezy-products" class="button">Clear</a><?php endif; ?>
+      <?php if ( $search ) : ?><a href="?page=ezyein-products" class="button">Clear</a><?php endif; ?>
     </form>
 
     <p class="ezy-count"><?php echo (int) $total; ?> product(s) found</p>
