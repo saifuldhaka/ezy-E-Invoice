@@ -1,5 +1,7 @@
 <?php
 if ( ! defined( 'ABSPATH' ) ) exit;
+// phpcs:disable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound -- Template partial included within class methods; variables are not in global scope.
+
 if ( ! current_user_can( 'manage_options' ) ) wp_die( 'Insufficient permissions.' );
 
 if ( isset( $_POST['ezy_settings_nonce'] ) && wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['ezy_settings_nonce'] ) ), 'ezy_save_settings' ) ) {

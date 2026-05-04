@@ -8,6 +8,8 @@
  * @package ezy-e-invoice
  */
 if ( ! defined( 'ABSPATH' ) ) exit;
+// phpcs:disable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound -- Template partial included within class methods; variables are not in global scope.
+
 ?>
 <!DOCTYPE html>
 <html>

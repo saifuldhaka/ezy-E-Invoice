@@ -5,7 +5,7 @@ $wpdb->query( "DROP TABLE IF EXISTS {$wpdb->prefix}ezy_invoice_items" ); // phpc
 $wpdb->query( "DROP TABLE IF EXISTS {$wpdb->prefix}ezy_invoices" ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching,WordPress.DB.DirectDatabaseQuery.SchemaChange
 $wpdb->query( "DROP TABLE IF EXISTS {$wpdb->prefix}ezy_products" ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching,WordPress.DB.DirectDatabaseQuery.SchemaChange
 $wpdb->query( "DROP TABLE IF EXISTS {$wpdb->prefix}ezy_clients" ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching,WordPress.DB.DirectDatabaseQuery.SchemaChange
-$options = [
+$ezyein_options = [
     'ezyein_db_version','ezyein_next_number','ezyein_prefix',
     'ezyein_number_padding','ezyein_payment_terms',
     'ezyein_company_name','ezyein_company_logo','ezyein_address_line1',
@@ -20,4 +20,4 @@ $options = [
     'ezyein_email_from_email','ezyein_email_subject','ezyein_email_cc',
     'ezyein_email_bcc','ezyein_email_body',
 ];
-foreach ( $options as $opt ) { delete_option( $opt ); }
+foreach ( $ezyein_options as $ezyein_opt ) { delete_option( $ezyein_opt ); }
