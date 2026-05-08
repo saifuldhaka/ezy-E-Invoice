@@ -4,7 +4,7 @@ Tags:              invoice, billing, pdf, woocommerce, email
 Requires at least: 5.8
 Tested up to:      6.9
 Requires PHP:      7.4
-Stable tag: 2.1.3
+Stable tag: 2.1.4
 License:           GPLv2 or later
 License URI:       https://www.gnu.org/licenses/gpl-2.0.html
 Donate link:       https://ehut.tech/donate/
@@ -101,6 +101,11 @@ The `uninstall.php` file removes all plugin options. Database tables are retaine
 12. **PDF Invoice** – Sample of the generated PDF sent to clients.
 
 == Changelog ==
+
+= 2.1.4 =
+* Fix: Download PDF button now forces file download instead of opening in browser tab
+* Fix: Auto-regenerate PDF if previously saved as HTML fallback (FPDF class name mismatch on old installs)
+* Fix: Removed dependency on pdf_path file existence check — download always works via secure handler
 
 = 2.1.3 =
 * Fix: Renamed all plugin class prefixes from `Ezy_` to `EZYEIN_` to meet WordPress.org 4-character prefix requirement

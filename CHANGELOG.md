@@ -12,6 +12,12 @@
 
 # Changelog
 
+## [2.1.4] - 2026-05-09
+### Fixed
+- Download PDF button now forces file download (Content-Disposition: attachment) instead of opening in browser
+- Auto-regenerate PDF if stored path was an HTML fallback from FPDF class mismatch on older installs
+- Secure nonce-verified download handler via admin_init
+
 All notable changes to **ezy E Invoice** are documented here.
 
 ## [2.1.1] – 2025-04-13

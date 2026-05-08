@@ -9,6 +9,7 @@ class EZYEIN_Admin {
         add_action( 'admin_enqueue_scripts', [ $this, 'enqueue_donate_banner' ] );
         add_action( 'in_admin_header',       [ $this, 'render_donate_banner'  ] );
         EZYEIN_Settings::register_hooks();
+        add_action( 'admin_init', [ $this, 'handle_pdf_download' ] );
     }
 
     public function register_menus() {
@@ -106,6 +107,61 @@ class EZYEIN_Admin {
             </a>
         </div>
         <?php
+    }
+
+
+    /**
+     * Serve PDF (or regenerate if missing/HTML) as a forced download.
+     */
+    public function handle_pdf_download() {
+        if ( empty( $_GET['ezyein_action'] ) || 'download_pdf' !== $_GET['ezyein_action'] ) {
+            return;
+        }
+        if ( ! current_user_can( 'manage_options' ) ) {
+            wp_die( esc_html__( 'Insufficient permissions.', 'ezy-e-invoice' ) );
+        }
+        $nonce = isset( $_GET['_nonce'] ) ? sanitize_text_field( wp_unslash( $_GET['_nonce'] ) ) : '';
+        if ( ! wp_verify_nonce( $nonce, 'ezyein_download_pdf' ) ) {
+            wp_die( esc_html__( 'Security check failed.', 'ezy-e-invoice' ) );
+        }
+        $id      = absint( $_GET['id'] ?? 0 );
+        $invoice = EZYEIN_DB::get_invoice( $id );
+        if ( ! $invoice ) {
+            wp_die( esc_html__( 'Invoice not found.', 'ezy-e-invoice' ) );
+        }
+
+        $pdf_path = $invoice->pdf_path ?? '';
+
+        // Regenerate if missing or was an HTML fallback
+        $needs_regen = ! $pdf_path
+                    || ! file_exists( $pdf_path )
+                    || str_ends_with( strtolower( $pdf_path ), '.html' );
+
+        if ( $needs_regen ) {
+            $pdf_path = EZYEIN_PDF::generate( $id );
+            if ( $pdf_path ) {
+                EZYEIN_DB::update_invoice_pdf( $id, $pdf_path );
+            }
+        }
+
+        if ( ! $pdf_path || ! file_exists( $pdf_path ) ) {
+            wp_die( esc_html__( 'PDF could not be generated. Please check your server error log.', 'ezy-e-invoice' ) );
+        }
+
+        $ext      = strtolower( pathinfo( $pdf_path, PATHINFO_EXTENSION ) );
+        $mime     = ( 'pdf' === $ext ) ? 'application/pdf' : 'text/html';
+        $filename = 'invoice-' . sanitize_file_name( $invoice->invoice_number ) . '.' . $ext;
+
+        // Output file with forced-download headers
+        header( 'Content-Type: '        . $mime );
+        header( 'Content-Disposition: attachment; filename="' . $filename . '"' );
+        header( 'Content-Length: '      . filesize( $pdf_path ) );
+        header( 'Cache-Control: private, no-cache, no-store, must-revalidate' );
+        header( 'Pragma: no-cache' );
+        header( 'Expires: 0' );
+        // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Binary file output
+        readfile( $pdf_path );
+        exit;
     }
 
 }

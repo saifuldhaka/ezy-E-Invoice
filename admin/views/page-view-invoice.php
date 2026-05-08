@@ -33,15 +33,16 @@ $display_status = $is_overdue ? 'overdue' : $invoice->status;
         <span class="dashicons dashicons-yes"></span> Mark as Paid
       </button>
       <?php endif; ?>
-      <?php if ( $invoice->pdf_path && file_exists($invoice->pdf_path) ) : ?>
       <?php
-        $upload_dir = wp_upload_dir();
-        $pdf_url = str_replace( $upload_dir['basedir'], $upload_dir['baseurl'], $invoice->pdf_path );
+        $dl_url = add_query_arg( [
+            'ezyein_action' => 'download_pdf',
+            'id'            => $id,
+            '_nonce'        => wp_create_nonce( 'ezyein_download_pdf' ),
+        ], admin_url( 'admin.php' ) );
       ?>
-      <a href="<?php echo esc_url($pdf_url); ?>" target="_blank" class="button button-primary">
+      <a href="<?php echo esc_url( $dl_url ); ?>" class="button button-primary">
         <span class="dashicons dashicons-download"></span> Download PDF
       </a>
-      <?php endif; ?>
     </div>
   </div>
 
