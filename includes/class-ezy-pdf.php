@@ -25,9 +25,6 @@ class EZYEIN_PDF {
         }
 
         // FPDF library not found.
-        if ( defined( 'WP_DEBUG_LOG' ) && WP_DEBUG_LOG ) {
-        	error_log( 'ezy-e-invoice: FPDF library not found at ' . $fpdf_path );
-        }
         return false;
     }
 
@@ -76,9 +73,6 @@ class EZYEIN_PDF {
                         $pdf->Image( $logo_path, 15, 15, 40 );
                         $pdf->Ln( 12 );
                     } catch ( Exception $logo_err ) {
-                        if ( defined( 'WP_DEBUG_LOG' ) && WP_DEBUG_LOG ) {
-                        	error_log( 'ezy-e-invoice: Logo image skipped — ' . $logo_err->getMessage() );
-                        }
                     }
                 }
             }
@@ -275,24 +269,15 @@ class EZYEIN_PDF {
             // Write to file
             $pdf_content = $pdf->Output( 'S' );
             if ( empty( $pdf_content ) ) {
-                if ( defined( 'WP_DEBUG_LOG' ) && WP_DEBUG_LOG ) {
-                	error_log( 'ezy-e-invoice: FPDF Output() returned empty content for invoice #' . $invoice->id );
-                }
                 return false;
             }
             // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_file_put_contents
             if ( false === file_put_contents( $filepath, $pdf_content ) ) {
-                if ( defined( 'WP_DEBUG_LOG' ) && WP_DEBUG_LOG ) {
-                	error_log( 'ezy-e-invoice: Cannot write PDF to ' . $filepath );
-                }
                 return false;
             }
             return $filepath;
 
         } catch ( Exception $e ) {
-            if ( defined( 'WP_DEBUG_LOG' ) && WP_DEBUG_LOG ) {
-            	error_log( 'ezy-e-invoice: FPDF exception for invoice #' . $invoice->id . ' — ' . $e->getMessage() );
-            }
             return false;
         }
     }
