@@ -111,7 +111,7 @@ class EZYEIN_Admin {
 
 
     /**
-     * Serve PDF (or regenerate if missing/HTML) as a forced download.
+     * Always regenerate and serve fresh PDF as a forced download.
      */
     public function handle_pdf_download() {
         if ( empty( $_GET['ezyein_action'] ) || 'download_pdf' !== $_GET['ezyein_action'] ) {
@@ -130,18 +130,11 @@ class EZYEIN_Admin {
             wp_die( esc_html__( 'Invoice not found.', 'ezy-e-invoice' ) );
         }
 
-        $pdf_path = $invoice->pdf_path ?? '';
-
-        // Regenerate if missing or was an HTML fallback
-        $needs_regen = ! $pdf_path
-                    || ! file_exists( $pdf_path )
-                    || str_ends_with( strtolower( $pdf_path ), '.html' );
-
-        if ( $needs_regen ) {
-            $pdf_path = EZYEIN_PDF::generate( $id );
-            if ( $pdf_path ) {
-                EZYEIN_DB::update_invoice_pdf( $id, $pdf_path );
-            }
+        // Always regenerate the PDF fresh on every download to ensure the latest
+        // layout and data are used (avoids serving stale cached files).
+        $pdf_path = EZYEIN_PDF::generate( $id );
+        if ( $pdf_path ) {
+            EZYEIN_DB::update_invoice_pdf( $id, $pdf_path );
         }
 
         if ( ! $pdf_path || ! file_exists( $pdf_path ) ) {
@@ -160,7 +153,16 @@ class EZYEIN_Admin {
         header( 'Pragma: no-cache' );
         header( 'Expires: 0' );
         // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Binary file output
-        readfile( $pdf_path );
+        global $wp_filesystem;
+			if ( empty( $wp_filesystem ) ) {
+				require_once ABSPATH . 'wp-admin/includes/file.php';
+				WP_Filesystem();
+			}
+			$file_content = $wp_filesystem->get_contents( $pdf_path );
+			if ( false !== $file_content ) {
+				// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+				echo $file_content;
+			}
         exit;
     }
 

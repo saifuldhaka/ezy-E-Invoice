@@ -24,8 +24,11 @@ class EZYEIN_PDF {
             return self::generate_with_fpdf( $invoice, $items, $filepath );
         }
 
-        // Fallback: save as HTML with .pdf extension note
-        return self::generate_html_fallback( $invoice, $items, $filepath );
+        // FPDF library not found.
+        if ( defined( 'WP_DEBUG_LOG' ) && WP_DEBUG_LOG ) {
+        	error_log( 'ezy-e-invoice: FPDF library not found at ' . $fpdf_path );
+        }
+        return false;
     }
 
     private static function generate_with_fpdf( $invoice, $items, $filepath ) {
@@ -49,6 +52,14 @@ class EZYEIN_PDF {
             'sc_label'        => EZYEIN_Settings::get( 'service_charge_label', 'Service Charge' ),
         ];
 
+        // Helper: safely convert UTF-8 strings to Latin-1 for FPDF (FPDF 1.x does not support UTF-8 natively).
+        $enc = function( $str ) {
+            if ( function_exists( 'iconv' ) ) {
+                return iconv( 'UTF-8', 'ISO-8859-1//TRANSLIT//IGNORE', (string) $str );
+            }
+            return utf8_decode( (string) $str );
+        };
+
         try {
             $pdf = new EZYEIN_FPDF( 'P', 'mm', 'A4' );
             $pdf->AddPage();
@@ -57,19 +68,25 @@ class EZYEIN_PDF {
             $pageW = 180; // 210 - 30 margins
 
             // ── HEADER ───────────────────────────────────────────────────────
-            // Logo
+            // Logo (wrapped in its own try/catch — a bad logo must not abort the PDF)
             if ( $settings['company_logo'] ) {
                 $logo_path = self::url_to_path( $settings['company_logo'] );
                 if ( $logo_path && file_exists( $logo_path ) ) {
-                    $pdf->Image( $logo_path, 15, 15, 40 );
-                    $pdf->Ln( 12 );
+                    try {
+                        $pdf->Image( $logo_path, 15, 15, 40 );
+                        $pdf->Ln( 12 );
+                    } catch ( Exception $logo_err ) {
+                        if ( defined( 'WP_DEBUG_LOG' ) && WP_DEBUG_LOG ) {
+                        	error_log( 'ezy-e-invoice: Logo image skipped — ' . $logo_err->getMessage() );
+                        }
+                    }
                 }
             }
 
             // Company info (left)
             $pdf->SetFont( 'Arial', 'B', 14 );
             $pdf->SetTextColor( 31, 73, 125 );
-            $pdf->Cell( $pageW / 2, 7, $settings['company_name'], 0, 0, 'L' );
+            $pdf->Cell( $pageW / 2, 7, $enc( $settings['company_name'] ), 0, 0, 'L' );
 
             // INVOICE title (right)
             $pdf->SetFont( 'Arial', 'B', 22 );
@@ -84,13 +101,13 @@ class EZYEIN_PDF {
                 trim( $settings['state'] . ' ' . $settings['country'] ),
             ] );
             foreach ( $addr_parts as $part ) {
-                $pdf->Cell( $pageW / 2, 5, $part, 0, 0, 'L' );
+                $pdf->Cell( $pageW / 2, 5, $enc( $part ), 0, 0, 'L' );
                 $pdf->Ln( 5 );
             }
-            if ( $settings['phone'] ) { $pdf->Cell( $pageW / 2, 5, 'Tel: ' . $settings['phone'], 0, 1 ); }
-            if ( $settings['email'] ) { $pdf->Cell( $pageW / 2, 5, 'Email: ' . $settings['email'], 0, 1 ); }
-            if ( $settings['tax_number'] ) { $pdf->Cell( $pageW / 2, 5, 'Tax No: ' . $settings['tax_number'], 0, 1 ); }
-            if ( $settings['reg_number'] ) { $pdf->Cell( $pageW / 2, 5, 'Reg No: ' . $settings['reg_number'], 0, 1 ); }
+            if ( $settings['phone'] ) { $pdf->Cell( $pageW / 2, 5, $enc( 'Tel: ' . $settings['phone'] ), 0, 1 ); }
+            if ( $settings['email'] ) { $pdf->Cell( $pageW / 2, 5, $enc( 'Email: ' . $settings['email'] ), 0, 1 ); }
+            if ( $settings['tax_number'] ) { $pdf->Cell( $pageW / 2, 5, $enc( 'Tax No: ' . $settings['tax_number'] ), 0, 1 ); }
+            if ( $settings['reg_number'] ) { $pdf->Cell( $pageW / 2, 5, $enc( 'Reg No: ' . $settings['reg_number'] ), 0, 1 ); }
 
             $pdf->Ln( 3 );
 
@@ -113,7 +130,7 @@ class EZYEIN_PDF {
             $pdf->SetFont( 'Arial', 'B', 11 );
             $pdf->SetTextColor( 30, 30, 30 );
             $client_name = trim( $invoice->contact_name . ( $invoice->company_name ? ' / ' . $invoice->company_name : '' ) );
-            $pdf->Cell( $col1, 6, $client_name, 0, 1 );
+            $pdf->Cell( $col1, 6, $enc( $client_name ), 0, 1 );
             $pdf->SetFont( 'Arial', '', 9 );
             $pdf->SetTextColor( 80, 80, 80 );
             $c_addr = array_filter( [
@@ -121,10 +138,13 @@ class EZYEIN_PDF {
                 trim( $invoice->city . ' ' . $invoice->postal_code ),
                 trim( $invoice->state_province . ' ' . $invoice->country ),
             ] );
-            foreach ( $c_addr as $part ) { $pdf->Cell( $col1, 5, $part, 0, 1 ); }
-            if ( $invoice->client_email ) $pdf->Cell( $col1, 5, $invoice->client_email, 0, 1 );
-            if ( $invoice->client_phone ) $pdf->Cell( $col1, 5, 'Tel: ' . $invoice->client_phone, 0, 1 );
-            if ( $invoice->client_tax_number ) $pdf->Cell( $col1, 5, 'Tax No: ' . $invoice->client_tax_number, 0, 1 );
+            foreach ( $c_addr as $part ) { $pdf->Cell( $col1, 5, $enc( $part ), 0, 1 ); }
+            if ( $invoice->client_email ) $pdf->Cell( $col1, 5, $enc( $invoice->client_email ), 0, 1 );
+            if ( $invoice->client_phone ) $pdf->Cell( $col1, 5, $enc( 'Tel: ' . $invoice->client_phone ), 0, 1 );
+            if ( $invoice->client_tax_number ) $pdf->Cell( $col1, 5, $enc( 'Tax No: ' . $invoice->client_tax_number ), 0, 1 );
+
+            // Capture Bill To end Y so we can avoid overlap with the meta column.
+            $bill_to_end_y = $pdf->GetY();
 
             // Invoice meta (right side)
             $pdf->SetXY( 15 + $col1, $curY );
@@ -139,12 +159,14 @@ class EZYEIN_PDF {
                 $pdf->SetX( 15 + $col1 );
                 $pdf->SetFont( 'Arial', 'B', 9 );
                 $pdf->SetTextColor( 80, 80, 80 );
-                $pdf->Cell( 30, 6, $label . ':', 0 );
+                $pdf->Cell( 30, 6, $enc( $label . ':' ), 0 );
                 $pdf->SetFont( 'Arial', '', 9 );
                 $pdf->SetTextColor( 30, 30, 30 );
-                $pdf->Cell( $col2 - 30, 6, $value, 0, 1 );
+                $pdf->Cell( $col2 - 30, 6, $enc( (string) $value ), 0, 1 );
             }
 
+            // Move below whichever section (Bill To OR meta) is taller, then add gap.
+            $pdf->SetY( max( $bill_to_end_y, $pdf->GetY() ) );
             $pdf->Ln( 5 );
 
             // ── ITEMS TABLE ──────────────────────────────────────────────────
@@ -172,9 +194,8 @@ class EZYEIN_PDF {
                 $fill = ( $row_num % 2 === 0 );
                 $pdf->SetFillColor( 242, 246, 252 );
                 $pdf->Cell( $col_no,   6, $row_num, 1, 0, 'C', $fill );
-                $desc = $item->item_name . ( $item->item_description ? "\n  " . $item->item_description : '' );
                 $x    = $pdf->GetX(); $y = $pdf->GetY();
-                $pdf->MultiCell( $col_desc, 6, $item->item_name, 1, 'L', $fill );
+                $pdf->MultiCell( $col_desc, 6, $enc( $item->item_name ), 1, 'L', $fill );
                 $newY = $pdf->GetY();
                 $pdf->SetXY( $x + $col_desc, $y );
                 $rowH = $newY - $y;
@@ -207,7 +228,7 @@ class EZYEIN_PDF {
             $pdf->SetTextColor( 60, 60, 60 );
             foreach ( $totals as $lbl => $val ) {
                 $pdf->SetX( $label_x );
-                $pdf->Cell( $label_w, 6, $lbl . ':', 0, 0, 'R' );
+                $pdf->Cell( $label_w, 6, $enc( $lbl . ':' ), 0, 0, 'R' );
                 $pdf->Cell( $val_w,   6, $settings['currency'] . ' ' . number_format( (float) $val, 2 ), 0, 1, 'R' );
             }
 
@@ -233,7 +254,7 @@ class EZYEIN_PDF {
                 $pdf->Cell( $pageW, 5, 'NOTES / TERMS', 0, 1 );
                 $pdf->SetFont( 'Arial', '', 9 );
                 $pdf->SetTextColor( 60, 60, 60 );
-                $pdf->MultiCell( $pageW, 5, $invoice->notes, 0, 'L' );
+                $pdf->MultiCell( $pageW, 5, $enc( $invoice->notes ), 0, 'L' );
                 $pdf->Ln( 3 );
             }
             if ( $settings['bank_details'] ) {
@@ -242,7 +263,7 @@ class EZYEIN_PDF {
                 $pdf->Cell( $pageW, 5, 'PAYMENT DETAILS', 0, 1 );
                 $pdf->SetFont( 'Arial', '', 9 );
                 $pdf->SetTextColor( 60, 60, 60 );
-                $pdf->MultiCell( $pageW, 5, $settings['bank_details'], 0, 'L' );
+                $pdf->MultiCell( $pageW, 5, $enc( $settings['bank_details'] ), 0, 'L' );
             }
 
             // ── FOOTER ───────────────────────────────────────────────────────
@@ -251,11 +272,28 @@ class EZYEIN_PDF {
             $pdf->SetTextColor( 150, 150, 150 );
             $pdf->Cell( $pageW, 5, 'Thank you for your business! — Generated by ezy E Invoice', 0, 0, 'C' );
 
-            $pdf->Output( 'F', $filepath );
+            // Write to file
+            $pdf_content = $pdf->Output( 'S' );
+            if ( empty( $pdf_content ) ) {
+                if ( defined( 'WP_DEBUG_LOG' ) && WP_DEBUG_LOG ) {
+                	error_log( 'ezy-e-invoice: FPDF Output() returned empty content for invoice #' . $invoice->id );
+                }
+                return false;
+            }
+            // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_file_put_contents
+            if ( false === file_put_contents( $filepath, $pdf_content ) ) {
+                if ( defined( 'WP_DEBUG_LOG' ) && WP_DEBUG_LOG ) {
+                	error_log( 'ezy-e-invoice: Cannot write PDF to ' . $filepath );
+                }
+                return false;
+            }
             return $filepath;
 
         } catch ( Exception $e ) {
-            return self::generate_html_fallback( EZYEIN_DB::get_invoice( $invoice->id ), EZYEIN_DB::get_invoice_items( $invoice->id ), $filepath );
+            if ( defined( 'WP_DEBUG_LOG' ) && WP_DEBUG_LOG ) {
+            	error_log( 'ezy-e-invoice: FPDF exception for invoice #' . $invoice->id . ' — ' . $e->getMessage() );
+            }
+            return false;
         }
     }
 

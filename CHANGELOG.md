@@ -1,3 +1,14 @@
+## [2.1.6] - 2026-05-09
+### Fixed
+- FPDF font path uses PHP DIRECTORY_SEPARATOR instead of hardcoded forward slash — fixes font not found error on Windows servers (Laragon, WAMP, XAMPP)
+
+## [2.1.6] - 2026-05-09
+### Fixed
+- UTF-8 / non-Latin characters in company/client data now handled correctly via iconv (FPDF uses Latin-1)
+- Logo image errors no longer abort the entire PDF generation
+- PDF download shows descriptive error instead of serving HTML fallback
+- Use Output('S') + file_put_contents for reliable PDF file writing
+
 ## [2.1.3] - 2026-05-04
 
 ### Fixed
@@ -12,7 +23,7 @@
 
 # Changelog
 
-## [2.1.4] - 2026-05-09
+## [2.1.6] - 2026-05-09
 ### Fixed
 - Download PDF button now forces file download (Content-Disposition: attachment) instead of opening in browser
 - Auto-regenerate PDF if stored path was an HTML fallback from FPDF class mismatch on older installs

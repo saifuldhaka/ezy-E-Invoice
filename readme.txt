@@ -4,7 +4,7 @@ Tags:              invoice, billing, pdf, woocommerce, email
 Requires at least: 5.8
 Tested up to:      6.9
 Requires PHP:      7.4
-Stable tag: 2.1.4
+Stable tag: 2.1.9
 License:           GPLv2 or later
 License URI:       https://www.gnu.org/licenses/gpl-2.0.html
 Donate link:       https://ehut.tech/donate/
@@ -102,7 +102,37 @@ The `uninstall.php` file removes all plugin options. Database tables are retaine
 
 == Changelog ==
 
-= 2.1.4 =
+= 2.1.8 =
+* Fix: PDF is always regenerated fresh on download — no more stale cached layout served.
+* Fix: Items table no longer overlaps Bill To section when client has many address lines.
+
+= 2.1.7 =
+* Fix: Product table no longer overlaps the Bill To section when client has many address lines.
+
+= 2.1.6 =
+* Fix: FPDF font path now uses DIRECTORY_SEPARATOR — fixes font loading on Windows (Laragon/WAMP/XAMPP)
+
+= 2.1.8 =
+* Fix: PDF is always regenerated fresh on download — no more stale cached layout served.
+* Fix: Items table no longer overlaps Bill To section when client has many address lines.
+
+= 2.1.7 =
+* Fix: Product table no longer overlaps the Bill To section when client has many address lines.
+
+= 2.1.6 =
+* Fix: PDF generation failure for UTF-8/non-Latin characters in company or client names (iconv encoding fix)
+* Fix: Logo image errors no longer abort PDF — logo is gracefully skipped with error log entry
+* Fix: PDF download now shows a clear error message instead of silently serving HTML
+* Fix: Switched to Output('S') + file_put_contents for more reliable PDF writing
+
+= 2.1.8 =
+* Fix: PDF is always regenerated fresh on download — no more stale cached layout served.
+* Fix: Items table no longer overlaps Bill To section when client has many address lines.
+
+= 2.1.7 =
+* Fix: Product table no longer overlaps the Bill To section when client has many address lines.
+
+= 2.1.6 =
 * Fix: Download PDF button now forces file download instead of opening in browser tab
 * Fix: Auto-regenerate PDF if previously saved as HTML fallback (FPDF class name mismatch on old installs)
 * Fix: Removed dependency on pdf_path file existence check — download always works via secure handler
