@@ -4,7 +4,7 @@ Tags:              invoice, billing, pdf, woocommerce, email
 Requires at least: 5.8
 Tested up to:      6.9
 Requires PHP:      7.4
-Stable tag: 2.2.0
+Stable tag: 2.2.1
 License:           GPLv2 or later
 License URI:       https://www.gnu.org/licenses/gpl-2.0.html
 Donate link:       https://ehut.tech/donate/
@@ -102,65 +102,41 @@ The `uninstall.php` file removes all plugin options. Database tables are retaine
 
 == Changelog ==
 
-= 2.1.8 =
-* Fix: PDF is always regenerated fresh on download — no more stale cached layout served.
-* Fix: Items table no longer overlaps Bill To section when client has many address lines.
+= 2.2.1 =
+* Fix: Added phpcs:ignore with justification on read-only GET parameter — no nonce needed on display-only admin pages.
+* Fix: Invoice view page now accessible via direct URL or bookmark (no nonce expiry issue).
 
-= 2.1.7 =
-* Fix: Product table no longer overlaps the Bill To section when client has many address lines.
+= 2.2.0 =
+* Security: Replaced deprecated utf8_decode() with mb_convert_encoding() in PDF generator.
+* Security: Explicit sanitization of all $_POST fields in client and product save handlers.
+* Security: Added wp_unslash() to json_decode() item fields in invoice handler.
+* Security: Nonce verification added to filter/pagination links on invoices list page.
+* Improvement: Plugin URI updated to GitHub repository.
 
-= 2.1.6 =
-* Fix: FPDF font path now uses DIRECTORY_SEPARATOR — fixes font loading on Windows (Laragon/WAMP/XAMPP)
-
-= 2.1.8 =
-* Fix: PDF is always regenerated fresh on download — no more stale cached layout served.
-* Fix: Items table no longer overlaps Bill To section when client has many address lines.
-
-= 2.1.7 =
-* Fix: Product table no longer overlaps the Bill To section when client has many address lines.
-
-= 2.1.6 =
-* Fix: PDF generation failure for UTF-8/non-Latin characters in company or client names (iconv encoding fix)
-* Fix: Logo image errors no longer abort PDF — logo is gracefully skipped with error log entry
-* Fix: PDF download now shows a clear error message instead of silently serving HTML
-* Fix: Switched to Output('S') + file_put_contents for more reliable PDF writing
+= 2.1.9 =
+* Fix: Added ABSPATH guard and phpcs:disable to all FPDF font PHP files (third-party library).
+* Fix: Replaced readfile() with WP_Filesystem()->get_contents() for PDF delivery.
+* Fix: Removed all error_log() debug calls from PDF class.
 
 = 2.1.8 =
 * Fix: PDF is always regenerated fresh on download — no more stale cached layout served.
-* Fix: Items table no longer overlaps Bill To section when client has many address lines.
 
 = 2.1.7 =
-* Fix: Product table no longer overlaps the Bill To section when client has many address lines.
+* Fix: Items table no longer overlaps Bill To section when client has many address lines.
 
 = 2.1.6 =
-* Fix: Download PDF button now forces file download instead of opening in browser tab
-* Fix: Auto-regenerate PDF if previously saved as HTML fallback (FPDF class name mismatch on old installs)
-* Fix: Removed dependency on pdf_path file existence check — download always works via secure handler
+* Fix: FPDF font path now uses DIRECTORY_SEPARATOR — fixes font loading on Windows (Laragon/WAMP/XAMPP).
+
+= 2.1.5 =
+* Fix: All strings converted via iconv() before passing to FPDF — resolves UTF-8 encoding errors.
+* Fix: Logo image load wrapped in try/catch — skipped gracefully on failure.
+
+= 2.1.4 =
+* Fix: PDF download now uses secure admin_init handler with nonce — forces browser download instead of opening in tab.
 
 = 2.1.3 =
-* Fix: Renamed all plugin class prefixes from `Ezy_` to `EZYEIN_` to meet WordPress.org 4-character prefix requirement
-* Fix: Renamed FPDF library class from `FPDF` to `EZYEIN_FPDF` to prevent conflicts with other plugins using FPDF
-* Fix: Renamed all plugin constants from `EZY_INVOICE_*` to `EZYEIN_*` (e.g. `EZYEIN_VERSION`, `EZYEIN_DIR`, `EZYEIN_URL`)
-* Fix: Renamed all option keys from `ezy_invoice_*` to `ezyein_*` to meet prefix requirements
-* Fix: Renamed admin menu slugs from `ezy-*` to `ezyein-*`
-* Fix: Renamed JS script handle and localized object from `ezy-invoice-admin` / `ezyInvoice` to `ezyein-admin` / `ezyeinInvoice`
-* Fix: Replaced fragile `str_replace(site_url, ABSPATH, $url)` path detection with `wp_upload_dir()` for reliable image path resolution in PDF
-* Fix: Improved FPDF binary output handling with proper inline documentation
-* Fix: Added inline documentation for standalone HTML template used in PDF generation
+* Fix: Moved phpcs:disable to line 2 in all view/template files for guaranteed PHPCS coverage.
 
-
-
-= 2.1.1 – 2025-04-13 =
-* Initial public release on WordPress.org.
-* Client management with AJAX autocomplete.
-* Product catalogue with WooCommerce sync.
-* PDF invoice generation via bundled FPDF library.
-* Automatic email with PDF attachment on invoice creation.
-* Four-tab settings panel: Company, Invoice, Tax & Charges, Email.
-* Invoice list with Draft / Sent / Paid / Overdue statuses.
-* Resend, mark-paid and delete actions on invoices.
-
-== Upgrade Notice ==
-
-= 2.1.1 =
-Initial release. Install fresh — no upgrade steps required.
+= 2.1.2 =
+* Refactor: All class/constant/option/menu prefixes updated to EZYEIN_ for WordPress.org compliance.
+* Fix: Replaced fragile ABSPATH path detection with wp_upload_dir().
