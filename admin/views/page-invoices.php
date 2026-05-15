@@ -62,7 +62,7 @@ $statuses = [ '' => 'All', 'draft' => 'Draft', 'sent' => 'Sent', 'paid' => 'Paid
             $display_status = $is_overdue ? 'overdue' : $inv->status;
         ?>
         <tr>
-          <td><strong><a href="<?php echo esc_url( wp_nonce_url( admin_url( 'admin.php?page=ezyein-invoice-view&id='.$inv->id ), 'ezyein_view_invoice' ) ); ?>"><?php echo esc_html( $inv->invoice_number ); ?></a></strong></td>
+          <td><strong><a href="<?php echo esc_url( admin_url( 'admin.php?page=ezyein-invoice-view&id=' . $inv->id ) ); ?>"><?php echo esc_html( $inv->invoice_number ); ?></a></strong></td>
           <td>
             <?php echo esc_html( $inv->contact_name ); ?>
             <?php if ( $inv->company_name ) echo '<br><small>' . esc_html( $inv->company_name ) . '</small>'; ?>
@@ -72,7 +72,7 @@ $statuses = [ '' => 'All', 'draft' => 'Draft', 'sent' => 'Sent', 'paid' => 'Paid
           <td><strong><?php echo esc_html( $currency . ' ' . number_format( (float) $inv->total, 2 ) ); ?></strong></td>
           <td><span class="ezy-badge ezy-badge-<?php echo esc_attr( $display_status ); ?>"><?php echo esc_html( ucfirst( $display_status ) ); ?></span></td>
           <td class="ezy-actions">
-            <a href="<?php echo esc_url( wp_nonce_url( admin_url( 'admin.php?page=ezyein-invoice-view&id='.$inv->id ), 'ezyein_view_invoice' ) ); ?>" class="button button-small">View</a>
+            <a href="<?php echo esc_url( admin_url( 'admin.php?page=ezyein-invoice-view&id=' . $inv->id ) ); ?>" class="button button-small">View</a>
             <button class="button button-small ezy-resend-invoice" data-id="<?php echo (int)$inv->id; ?>" title="Resend email">Resend</button>
             <?php if ( $inv->status !== 'paid' ) : ?>
             <button class="button button-small ezy-mark-paid" data-id="<?php echo (int)$inv->id; ?>">Mark Paid</button>

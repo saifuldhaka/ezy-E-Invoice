@@ -79,7 +79,7 @@ $currency = EZYEIN_Settings::get( 'currency_symbol', 'RM' );
           <td><?php echo esc_html( $currency . ' ' . number_format( (float) $inv->total, 2 ) ); ?></td>
           <td><span class="ezy-badge ezy-badge-<?php echo esc_attr( $inv->status ); ?>"><?php echo esc_html( ucfirst( $inv->status ) ); ?></span></td>
           <td><?php echo esc_html( gmdate( EZYEIN_Settings::get('date_format','d/m/Y'), strtotime( $inv->created_at ) ) ); ?></td>
-          <td><a href="<?php echo esc_url( admin_url('admin.php?page=ezyein-invoice-view&id=' . $inv->id) ); ?>" class="button button-small">View</a></td>
+          <td><a href="<?php echo esc_url( admin_url( 'admin.php?page=ezyein-invoice-view&id=' . $inv->id ) ); ?>" class="button button-small">View</a></td>
         </tr>
       <?php endforeach; ?>
       </tbody>

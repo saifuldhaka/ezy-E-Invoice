@@ -4,9 +4,6 @@ if ( ! defined( 'ABSPATH' ) ) exit;
 
 if ( ! current_user_can( 'manage_options' ) ) wp_die( 'Insufficient permissions.' );
 
-if ( ! isset( $_GET['_wpnonce'] ) || ! wp_verify_nonce( sanitize_key( wp_unslash( $_GET['_wpnonce'] ) ), 'ezyein_view_invoice' ) ) {
-    wp_die( esc_html__( 'Security check failed. Please navigate here from the invoices list.', 'ezy-e-invoice' ) );
-}
 $id      = absint( $_GET['id'] ?? 0 );
 $invoice = EZYEIN_DB::get_invoice( $id );
 if ( ! $invoice ) wp_die( 'Invoice not found.' );
