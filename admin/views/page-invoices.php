@@ -4,9 +4,11 @@ if ( ! defined( 'ABSPATH' ) ) exit;
 
 if ( ! current_user_can( 'manage_options' ) ) wp_die( 'Insufficient permissions.' );
 
-$search   = sanitize_text_field( wp_unslash( $_GET['s'] ?? '' ) ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended
-$status   = sanitize_text_field( wp_unslash( $_GET['status'] ?? '' ) ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended
-$paged    = max( 1, absint( wp_unslash( $_GET['paged'] ?? 1 ) ) ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+$list_nonce  = wp_create_nonce( 'ezyein_invoices_list' );
+$nonce_valid = isset( $_GET['_wpnonce'] ) && wp_verify_nonce( sanitize_key( wp_unslash( $_GET['_wpnonce'] ) ), 'ezyein_invoices_list' );
+$search   = $nonce_valid ? sanitize_text_field( wp_unslash( $_GET['s']      ?? '' ) ) : '';
+$status   = $nonce_valid ? sanitize_text_field( wp_unslash( $_GET['status'] ?? '' ) ) : '';
+$paged    = $nonce_valid ? max( 1, absint( wp_unslash( $_GET['paged'] ?? 1 ) ) ) : 1;
 $perpage  = 20;
 $offset   = ( $paged - 1 ) * $perpage;
 $total    = EZYEIN_DB::count_invoices( $status, $search );
@@ -26,7 +28,7 @@ $statuses = [ '' => 'All', 'draft' => 'Draft', 'sent' => 'Sent', 'paid' => 'Paid
   <!-- Filters -->
   <div class="ezy-filters">
     <?php foreach ( $statuses as $s => $label ) : ?>
-    <a href="?page=ezyein-invoices<?php echo $s ? '&status=' . urlencode($s) : ''; ?><?php echo $search ? '&s=' . urlencode($search) : ''; ?>"
+    <a href="?page=ezyein-invoices<?php echo $s ? '&status=' . urlencode($s) : ''; ?><?php echo $search ? '&s=' . urlencode($search) : ''; ?>&_wpnonce=<?php echo esc_attr( $list_nonce ); ?>"
        class="ezy-filter-tab <?php echo $status === $s ? 'active' : ''; ?>">
       <?php echo esc_html( $label ); ?>
     </a>
@@ -37,9 +39,10 @@ $statuses = [ '' => 'All', 'draft' => 'Draft', 'sent' => 'Sent', 'paid' => 'Paid
     <form method="get" action="" class="ezy-search-form">
       <input type="hidden" name="page" value="ezyein-invoices" />
       <?php if ( $status ) : ?><input type="hidden" name="status" value="<?php echo esc_attr($status); ?>" /><?php endif; ?>
+      <input type="hidden" name="_wpnonce" value="<?php echo esc_attr( $list_nonce ); ?>" />
       <input type="search" name="s" value="<?php echo esc_attr( $search ); ?>" placeholder="Search by invoice # or client name…" class="ezy-search-input" />
       <button type="submit" class="button">Search</button>
-      <?php if ( $search ) : ?><a href="?page=ezyein-invoices<?php echo $status ? '&status=' . esc_attr( $status ) : ''; ?>" class="button">Clear</a><?php endif; ?>
+      <?php if ( $search ) : ?><a href="?page=ezyein-invoices<?php echo $status ? '&status=' . esc_attr( $status ) : ''; ?>&_wpnonce=<?php echo esc_attr( $list_nonce ); ?>" class="button">Clear</a><?php endif; ?>
     </form>
 
     <p class="ezy-count"><?php echo (int) $total; ?> invoice(s)</p>
@@ -59,7 +62,7 @@ $statuses = [ '' => 'All', 'draft' => 'Draft', 'sent' => 'Sent', 'paid' => 'Paid
             $display_status = $is_overdue ? 'overdue' : $inv->status;
         ?>
         <tr>
-          <td><strong><a href="<?php echo esc_url( admin_url('admin.php?page=ezyein-invoice-view&id='.$inv->id) ); ?>"><?php echo esc_html( $inv->invoice_number ); ?></a></strong></td>
+          <td><strong><a href="<?php echo esc_url( wp_nonce_url( admin_url( 'admin.php?page=ezyein-invoice-view&id='.$inv->id ), 'ezyein_view_invoice' ) ); ?>"><?php echo esc_html( $inv->invoice_number ); ?></a></strong></td>
           <td>
             <?php echo esc_html( $inv->contact_name ); ?>
             <?php if ( $inv->company_name ) echo '<br><small>' . esc_html( $inv->company_name ) . '</small>'; ?>
@@ -69,7 +72,7 @@ $statuses = [ '' => 'All', 'draft' => 'Draft', 'sent' => 'Sent', 'paid' => 'Paid
           <td><strong><?php echo esc_html( $currency . ' ' . number_format( (float) $inv->total, 2 ) ); ?></strong></td>
           <td><span class="ezy-badge ezy-badge-<?php echo esc_attr( $display_status ); ?>"><?php echo esc_html( ucfirst( $display_status ) ); ?></span></td>
           <td class="ezy-actions">
-            <a href="<?php echo esc_url( admin_url('admin.php?page=ezyein-invoice-view&id='.$inv->id) ); ?>" class="button button-small">View</a>
+            <a href="<?php echo esc_url( wp_nonce_url( admin_url( 'admin.php?page=ezyein-invoice-view&id='.$inv->id ), 'ezyein_view_invoice' ) ); ?>" class="button button-small">View</a>
             <button class="button button-small ezy-resend-invoice" data-id="<?php echo (int)$inv->id; ?>" title="Resend email">Resend</button>
             <?php if ( $inv->status !== 'paid' ) : ?>
             <button class="button button-small ezy-mark-paid" data-id="<?php echo (int)$inv->id; ?>">Mark Paid</button>
@@ -85,7 +88,7 @@ $statuses = [ '' => 'All', 'draft' => 'Draft', 'sent' => 'Sent', 'paid' => 'Paid
     <?php if ( $pages > 1 ) : ?>
     <div class="ezy-pagination">
       <?php for ( $i = 1; $i <= $pages; $i++ ) : ?>
-        <a href="?page=ezyein-invoices&paged=<?php echo (int) $i; ?><?php echo $status ? '&status=' . esc_attr( $status ) : ''; ?><?php echo $search ? '&s='.urlencode($search) : ''; ?>"
+        <a href="?page=ezyein-invoices&paged=<?php echo (int) $i; ?><?php echo $status ? '&status=' . esc_attr( $status ) : ''; ?><?php echo $search ? '&s='.urlencode($search) : ''; ?>&_wpnonce=<?php echo esc_attr( $list_nonce ); ?>"
            class="button<?php echo $i === $paged ? ' button-primary' : ''; ?>"><?php echo (int) $i; ?></a>
       <?php endfor; ?>
     </div>

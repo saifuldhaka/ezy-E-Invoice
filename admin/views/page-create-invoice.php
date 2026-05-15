@@ -17,8 +17,12 @@ $payment_terms   = (int) EZYEIN_Settings::get( 'payment_terms', 30 );
 $next_number     = EZYEIN_DB::generate_invoice_number();
 $issue_date      = gmdate('Y-m-d');
 $due_date        = gmdate('Y-m-d', strtotime("+{$payment_terms} days"));
-// Pre-select client if coming from client page
-$preselect_client_id = absint( $_GET['client_id'] ?? 0 ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+// Pre-select client if coming from client page (nonce verified)
+$preselect_client_id = 0;
+if ( isset( $_GET['client_id'], $_GET['_wpnonce'] ) &&
+     wp_verify_nonce( sanitize_key( wp_unslash( $_GET['_wpnonce'] ) ), 'ezyein_create_invoice' ) ) {
+    $preselect_client_id = absint( $_GET['client_id'] );
+}
 $preselect_client    = $preselect_client_id ? EZYEIN_DB::get_client( $preselect_client_id ) : null;
 ?>
 <div class="wrap ezy-wrap">

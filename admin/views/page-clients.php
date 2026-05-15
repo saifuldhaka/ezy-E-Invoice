@@ -49,7 +49,7 @@ $pages   = ceil( $total / $perpage );
           <td class="ezy-actions">
             <button class="button button-small ezy-edit-client" data-id="<?php echo (int) $c->id; ?>">Edit</button>
             <button class="button button-small button-link-delete ezy-delete-client" data-id="<?php echo (int) $c->id; ?>" data-name="<?php echo esc_attr( $c->contact_name ); ?>">Delete</button>
-            <a class="button button-small" href="<?php echo esc_url( admin_url( 'admin.php?page=ezyein-create-invoice&client_id=' . $c->id ) ); ?>">New Invoice</a>
+            <a class="button button-small" href="<?php echo esc_url( wp_nonce_url( admin_url( 'admin.php?page=ezyein-create-invoice&client_id=' . $c->id ), 'ezyein_create_invoice' ) ); ?>">New Invoice</a>
           </td>
         </tr>
         <?php endforeach; ?>

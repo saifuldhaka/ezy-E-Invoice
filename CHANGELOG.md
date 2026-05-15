@@ -23,6 +23,15 @@
 
 # Changelog
 
+## [2.2.0] - 2025-05-15
+
+### Fixed
+- Replaced deprecated `utf8_decode()` with `mb_convert_encoding()` in PDF generator.
+- Added proper nonce verification to all admin GET-param view pages (`page-invoices.php`, `page-view-invoice.php`, `page-create-invoice.php`).
+- Explicitly sanitize all `$_POST` fields in `ajax_save()` for clients and products before passing to DB layer.
+- Added `wp_unslash()` to `json_decode()` item fields in invoice handler.
+- Moved `phpcs:ignore` annotation to the same line as binary PDF `echo` statement.
+
 ## [2.1.6] - 2026-05-09
 ### Fixed
 - Download PDF button now forces file download (Content-Disposition: attachment) instead of opening in browser

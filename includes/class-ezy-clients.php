@@ -36,7 +36,22 @@ class EZYEIN_Clients {
     public static function ajax_save() {
         check_ajax_referer( 'ezyein_invoice_nonce', 'nonce' );
         if ( ! current_user_can( 'manage_options' ) ) wp_send_json_error( 'Unauthorized', 403 );
-        $id = EZYEIN_DB::save_client( $_POST );
+        $data = [
+            'id'             => absint( wp_unslash( $_POST['id'] ?? 0 ) ),
+            'company_name'   => sanitize_text_field( wp_unslash( $_POST['company_name']   ?? '' ) ),
+            'contact_name'   => sanitize_text_field( wp_unslash( $_POST['contact_name']   ?? '' ) ),
+            'email'          => sanitize_email( wp_unslash( $_POST['email'] ?? '' ) ),
+            'phone'          => sanitize_text_field( wp_unslash( $_POST['phone']          ?? '' ) ),
+            'address_line1'  => sanitize_text_field( wp_unslash( $_POST['address_line1']  ?? '' ) ),
+            'address_line2'  => sanitize_text_field( wp_unslash( $_POST['address_line2']  ?? '' ) ),
+            'city'           => sanitize_text_field( wp_unslash( $_POST['city']           ?? '' ) ),
+            'state_province' => sanitize_text_field( wp_unslash( $_POST['state_province'] ?? '' ) ),
+            'country'        => sanitize_text_field( wp_unslash( $_POST['country']        ?? '' ) ),
+            'postal_code'    => sanitize_text_field( wp_unslash( $_POST['postal_code']    ?? '' ) ),
+            'tax_number'     => sanitize_text_field( wp_unslash( $_POST['tax_number']     ?? '' ) ),
+            'notes'          => sanitize_textarea_field( wp_unslash( $_POST['notes']      ?? '' ) ),
+        ];
+        $id = EZYEIN_DB::save_client( $data );
         if ( ! $id ) wp_send_json_error( 'Could not save client' );
         wp_send_json_success( [ 'id' => $id, 'message' => 'Client saved successfully.' ] );
     }

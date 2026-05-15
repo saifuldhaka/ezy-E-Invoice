@@ -54,7 +54,7 @@ class EZYEIN_PDF {
             if ( function_exists( 'iconv' ) ) {
                 return iconv( 'UTF-8', 'ISO-8859-1//TRANSLIT//IGNORE', (string) $str );
             }
-            return utf8_decode( (string) $str );
+            return mb_convert_encoding( (string) $str, 'ISO-8859-1', 'UTF-8' );
         };
 
         try {

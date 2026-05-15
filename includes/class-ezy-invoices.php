@@ -32,9 +32,9 @@ class EZYEIN_Invoices {
         // Sanitize each item's fields after decoding
         $items = array_map( function( $item ) {
             return [
-                'product_id'       => sanitize_text_field( $item['product_id'] ?? '' ),
-                'item_name'        => sanitize_text_field( $item['item_name'] ?? 'Item' ),
-                'item_description' => sanitize_textarea_field( $item['item_description'] ?? '' ),
+                'product_id'       => sanitize_text_field( wp_unslash( $item['product_id'] ?? '' ) ),
+                'item_name'        => sanitize_text_field( wp_unslash( $item['item_name'] ?? 'Item' ) ),
+                'item_description' => sanitize_textarea_field( wp_unslash( $item['item_description'] ?? '' ) ),
                 'unit_price'       => floatval( $item['unit_price'] ?? 0 ),
                 'quantity'         => floatval( $item['quantity'] ?? 1 ),
             ];

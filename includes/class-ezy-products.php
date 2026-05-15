@@ -39,7 +39,15 @@ class EZYEIN_Products {
     public static function ajax_save() {
         check_ajax_referer( 'ezyein_invoice_nonce', 'nonce' );
         if ( ! current_user_can( 'manage_options' ) ) wp_send_json_error( 'Unauthorized', 403 );
-        $id = EZYEIN_DB::save_product( $_POST );
+        $data = [
+            'id'          => absint( wp_unslash( $_POST['id'] ?? 0 ) ),
+            'name'        => sanitize_text_field( wp_unslash( $_POST['name']        ?? '' ) ),
+            'description' => sanitize_textarea_field( wp_unslash( $_POST['description'] ?? '' ) ),
+            'sku'         => sanitize_text_field( wp_unslash( $_POST['sku']         ?? '' ) ),
+            'price'       => floatval( wp_unslash( $_POST['price'] ?? 0 ) ),
+            'unit'        => sanitize_text_field( wp_unslash( $_POST['unit']        ?? 'unit' ) ),
+        ];
+        $id = EZYEIN_DB::save_product( $data );
         if ( ! $id ) wp_send_json_error( 'Could not save product' );
         wp_send_json_success( [ 'id' => $id, 'message' => 'Product saved successfully.' ] );
     }

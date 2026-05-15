@@ -160,8 +160,7 @@ class EZYEIN_Admin {
 			}
 			$file_content = $wp_filesystem->get_contents( $pdf_path );
 			if ( false !== $file_content ) {
-				// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-				echo $file_content;
+					echo $file_content; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Raw binary PDF stream; cannot be esc'd.
 			}
         exit;
     }
