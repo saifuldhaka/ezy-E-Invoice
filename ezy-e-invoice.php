@@ -1,9 +1,9 @@
 <?php
 /**
  * Plugin Name:       ezy E Invoice
- * Plugin URI:        https://ehut.tech/ezy-e-invoice/
+ * Plugin URI:        https://github.com/saifuldhaka/ezy-E-Invoice
  * Description:       A modern and easy e-invoice plugin – create, send and manage professional invoices with PDF attachments. Supports WooCommerce product sync, client management, configurable tax / service charges and branded emails.
- * Version:           2.1.9
+ * Version:           2.2.0
  * Requires at least: 5.8
  * Requires PHP:      7.4
  * Author:            eHut.tech
