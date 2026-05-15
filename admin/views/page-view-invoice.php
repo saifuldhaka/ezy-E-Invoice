@@ -4,7 +4,7 @@ if ( ! defined( 'ABSPATH' ) ) exit;
 
 if ( ! current_user_can( 'manage_options' ) ) wp_die( 'Insufficient permissions.' );
 
-$id      = absint( $_GET['id'] ?? 0 );
+$id      = absint( $_GET['id'] ?? 0 ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only display page; user capability check provides security.
 $invoice = EZYEIN_DB::get_invoice( $id );
 if ( ! $invoice ) wp_die( 'Invoice not found.' );
 $items    = EZYEIN_DB::get_invoice_items( $id );
